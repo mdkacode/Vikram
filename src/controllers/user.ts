@@ -57,7 +57,7 @@ export const uploadProduct = async (req: Request, res: Response, next: NextFunct
 
 export const listProduct = (req: Request, res: Response, next: NextFunction) => {
     // const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
-    const UPLOAD_PATH = " /home/anragkush/anil-backend/imagesPublic";
+    const UPLOAD_PATH = " /home/anragkush/anil-backend/imagesPublic/";
 
     Product.find((err: any, value: any) => {
         for (const t in value) {
