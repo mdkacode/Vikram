@@ -95,7 +95,7 @@ exports.uploadProduct = (req, res, next) =>
 	});
 exports.listProduct = (req, res, next) => {
 	// const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
-	const UPLOAD_PATH = " /home/anragkush/anil-backend/imagesPublic/";
+	const UPLOAD_PATH = "/home/anragkush/anil-backend/imagesPublic/";
 	Product_1.Product.find((err, value) => {
 		for (const t in value) {
 			fs_1.default

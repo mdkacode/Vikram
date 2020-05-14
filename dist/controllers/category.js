@@ -103,7 +103,7 @@ exports.updateCategory = (req = null, res = null) =>
 exports.getCategory = (req = null, res = null) =>
 	__awaiter(void 0, void 0, void 0, function* () {
 		// const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
-		const UPLOAD_PATH = " /home/anragkush/anil-backend/imagesPublic/";
+		const UPLOAD_PATH = "/home/anragkush/anil-backend/imagesPublic/";
 		loggerInfo_1.infoLog("getCategory", [req.body, req.query]);
 		let imageSource = [];
 		const message = [];
