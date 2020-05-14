@@ -62,7 +62,7 @@ export const listProduct = (req: Request, res: Response, next: NextFunction) => 
     Product.find((err: any, value: any) => {
         for (const t in value) {
             fs.readdirSync(UPLOAD_PATH + value[t].imagePath).forEach(file => {
-                value[t].imagePath = `http://52.186.14.151/static/${value[t].imagePath + "/" + file}`;
+                value[t].imagePath = `http://52.186.14.151:3000/static/${value[t].imagePath + "/" + file}`;
             });
         }
         if (err) console.log(err);
