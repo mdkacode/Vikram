@@ -2,7 +2,7 @@ import fs from "fs";
 import { Request, Response } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { MasterCategory } from "../models/Category";
-export const addCategory = async (req: Request = null, res: Response = null, next: NextFunction = null) => {
+export const addCategory = async (req: Request = null, res: Response = null) => {
     const Category = new MasterCategory({
         ...req.body
     });
@@ -19,7 +19,7 @@ export const addCategory = async (req: Request = null, res: Response = null, nex
     });
 };
 
-export const deleteCategory = async (req: Request = null, res: Response = null, next: NextFunction = null) => {
+export const deleteCategory = async (req: Request = null, res: Response = null) => {
     infoLog("deleteCategory", [req.body, req.query]);
     MasterCategory.deleteOne({ ...req.body }, (err, doc) => {
         if (err) {
@@ -31,7 +31,7 @@ export const deleteCategory = async (req: Request = null, res: Response = null, 
 };
 
 
-export const updateCategory = async (req: Request = null, res: Response = null, next: NextFunction = null) => {
+export const updateCategory = async (req: Request = null, res: Response = null) => {
     infoLog("deleteCategory", [req.body, req.query]);
     MasterCategory.findOneAndUpdate({ ...req.query }, { ...req.body }, { useFindAndModify: false }, (err, doc) => {
         if (err) {
@@ -42,7 +42,7 @@ export const updateCategory = async (req: Request = null, res: Response = null, 
     });
 };
 
-export const getCategory = async (req: Request = null, res: Response = null, next: NextFunction = null) => {
+export const getCategory = async (req: Request = null, res: Response = null) => {
     const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
     infoLog("getCategory", [req.body, req.query]);
     let imageSource: any = [];
@@ -70,11 +70,11 @@ export const getCategory = async (req: Request = null, res: Response = null, nex
                             });
                         }
                         doc[t].imageList = imageSource;
-                        imageSource=[];
+                        imageSource = [];
                     }
-                  
+
                 }
-                
+
                 res.status(200).jsonp({ message: doc, size: doc.length });
             }
         });

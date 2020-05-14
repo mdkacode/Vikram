@@ -1,5 +1,5 @@
 import { infoLog } from "./util/loggerInfo";
-import  crypto  from "crypto";
+import crypto from "crypto";
 import express from "express";
 import compression from "compression";  // compresses requests
 import session from "express-session";
@@ -14,7 +14,6 @@ import path from "path";
 import mongoose from "mongoose";
 import passport from "passport";
 import bluebird from "bluebird";
-import { v4 as uuidv4 } from "uuid";
 import { MONGODB_URI, SESSION_SECRET } from "./util/secrets";
 
 const MongoStore = mongo(session);
@@ -38,7 +37,7 @@ const app = express();
 const mongoUrl = MONGODB_URI;
 mongoose.Promise = bluebird;
 
-mongoose.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true } ).then(
+mongoose.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }).then(
     () => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
 ).catch(err => {
     console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
@@ -72,20 +71,20 @@ app.use(flash());
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 const storage = multer.diskStorage({
-    
+
     destination: function (req, file, cb) {
-      cb(null, UPLOAD_PATH);
+        cb(null, UPLOAD_PATH);
     },
-    filename:  function (req, file, cb) {
+    filename: function (req, file, cb) {
         const fileName = file.originalname;
         const lastExtenstion = fileName.substring(fileName.lastIndexOf("."));
         const folderName = req.query.name;
-        !fs.existsSync(UPLOAD_PATH+folderName.toString()) &&  fs.mkdirSync(UPLOAD_PATH+folderName.toString());
-      cb(null, `${folderName.toString()}/${new Date().getTime()}${lastExtenstion}`);
+        !fs.existsSync(UPLOAD_PATH + folderName.toString()) && fs.mkdirSync(UPLOAD_PATH + folderName.toString());
+        cb(null, `${folderName.toString()}/${new Date().getTime()}${lastExtenstion}`);
     }
-  });
-   
-  const upload = multer({limits: { fileSize: 8000000 }, storage: storage });
+});
+
+const upload = multer({ limits: { fileSize: 8000000 }, storage: storage });
 
 app.use((req, res, next) => {
     res.locals.user = req.user;
@@ -94,13 +93,13 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
     // After successful login, redirect back to the intended page
     if (!req.user &&
-    req.path !== "/login" &&
-    req.path !== "/signup" &&
-    !req.path.match(/^\/auth/) &&
-    !req.path.match(/\./)) {
+        req.path !== "/login" &&
+        req.path !== "/signup" &&
+        !req.path.match(/^\/auth/) &&
+        !req.path.match(/\./)) {
         req.session.returnTo = req.path;
     } else if (req.user &&
-    req.path == "/account") {
+        req.path == "/account") {
         req.session.returnTo = req.path;
     }
     next();
@@ -115,34 +114,32 @@ app.use(
  */
 
 
-app.post("/productImage", async (req,res, next)=> {
-    if (req.query.image)
-    {
-        infoLog("productImageURL",[req.query,req.body]);
+app.post("/productImage", async (req, res, next) => {
+    if (req.query.image) {
+        infoLog("productImageURL", [req.query, req.body]);
         const imageUrl = req.query.image.toString();
         const imgUrls = imageUrl.split(",");
         console.log(imgUrls);
-       !fs.existsSync("imagesPublic/"+req.query.name.toString()) &&   fs.mkdirSync("imagesPublic/"+req.query.name.toString());
-        for (const t in imgUrls){
+        !fs.existsSync("imagesPublic/" + req.query.name.toString()) && fs.mkdirSync("imagesPublic/" + req.query.name.toString());
+        for (const t in imgUrls) {
             const lastExtenstion = imgUrls[t].substring(imgUrls[t].lastIndexOf("."));
-            console.log("GET IMAGE TYPE",lastExtenstion);
-        await downloadImage({name:`${req.query.name}/${new Date().getTime()}${lastExtenstion}`,link:imgUrls[t],folder:"imagesPublic"});
+            console.log("GET IMAGE TYPE", lastExtenstion);
+            await downloadImage({ name: `${req.query.name}/${new Date().getTime()}${lastExtenstion}`, link: imgUrls[t], folder: "imagesPublic" });
         }
-        res.status(200).jsonp({message:"uploaded Succesfully"});
+        res.status(200).jsonp({ message: "uploaded Succesfully" });
     }
-    else
-    {
-        infoLog("productImageFILE",[req.query,req.body]);
+    else {
+        infoLog("productImageFILE", [req.query, req.body]);
         upload.any()(req, res, function (err) {
             if (err instanceof multer.MulterError) {
-              console.log(err);
-              return res.send(err);
+                console.log(err);
+                return res.send(err);
             } else if (err) {
                 return res.status(500).send(err);
             }
-                res.status(200).jsonp({message:"Files Uploaded Succcesfully"});
-          });
-    }  
+            res.status(200).jsonp({ message: "Files Uploaded Succcesfully" });
+        });
+    }
 });
 
 
@@ -155,18 +152,18 @@ app.post("/productImage", async (req,res, next)=> {
 
 
 
- app.post ("/category/add",categoryController.addCategory);
- app.post ("/category/update",categoryController.updateCategory);
- app.post ("/category/delete",categoryController.deleteCategory);
- app.get ("/category",categoryController.getCategory);
+app.post("/category/add", categoryController.addCategory);
+app.post("/category/update", categoryController.updateCategory);
+app.post("/category/delete", categoryController.deleteCategory);
+app.get("/category", categoryController.getCategory);
 
 
 //category Routes Here START
 
-app.get("/uploadProduct",userController.uploadProduct);
-app.delete("/deleteProduct",userController.deleteProduct);
-app.get("/listProduct",userController.listProduct);
-app.post("/updateProduct",userController.updateProduct);
+app.get("/uploadProduct", userController.uploadProduct);
+app.delete("/deleteProduct", userController.deleteProduct);
+app.get("/listProduct", userController.listProduct);
+app.post("/updateProduct", userController.updateProduct);
 
 
 app.get("/", homeController.index);
