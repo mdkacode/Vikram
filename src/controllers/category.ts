@@ -67,7 +67,7 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
                     for (const t in doc) {
                         if (doc[t].imagepath) {
                             fs.readdirSync(UPLOAD_PATH + doc[t].imagepath).forEach(file => {
-                                imageSource.push(`http://192.168.0.102:3000/static/${doc[t].imagepath + "/" + file}`);
+                                imageSource.push(`http://52.186.14.151/static/${doc[t].imagepath + "/" + file}`);
                             });
                         }
                         doc[t].imageList = imageSource;
