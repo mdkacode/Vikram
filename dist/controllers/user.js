@@ -101,7 +101,7 @@ exports.listProduct = (req, res, next) => {
 			fs_1.default
 				.readdirSync(UPLOAD_PATH + value[t].imagePath)
 				.forEach((file) => {
-					value[t].imagePath = `http://192.168.0.101:3000/static/${
+					value[t].imagePath = `http://52.186.14.151/static/${
 						value[t].imagePath + "/" + file
 					}`;
 				});
