@@ -129,7 +129,7 @@ exports.getCategory = (req = null, res = null) =>
 									.readdirSync(UPLOAD_PATH + doc[t].imagepath)
 									.forEach((file) => {
 										imageSource.push(
-											`http://192.168.0.102:3000/static/${
+											`http://52.186.14.151/static/${
 												doc[t].imagepath + "/" + file
 											}`,
 										);
