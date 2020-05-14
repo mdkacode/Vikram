@@ -1,16 +1,16 @@
-import { ProductProps,Product } from "./../models/Product";
+import { ProductProps, Product } from "./../models/Product";
 import async from "async";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import passport from "passport";
 import { User, UserDocument, AuthToken } from "../models/User";
-import  { MessageProps,Message } from "../models/Message";
+import { MessageProps, Message } from "../models/Message";
 import { Request, Response, NextFunction } from "express";
 import { IVerifyOptions } from "passport-local";
 import { WriteError } from "mongodb";
 import fs from "fs";
 import { check, sanitize, validationResult } from "express-validator";
-import sendMessage  from "../util/message";
+import sendMessage from "../util/message";
 import "../config/passport";
 
 /**
@@ -30,104 +30,104 @@ export const getLogin = (req: Request, res: Response) => {
 
 
 
-export const uploadProduct = async (req: Request, res: Response,next: NextFunction) =>{
-    const {id,productName,quantity,mPrice,sPrice,imagePath,category,sku} = req.query;
+export const uploadProduct = async (req: Request, res: Response, next: NextFunction) => {
+    const { id, productName, quantity, mPrice, sPrice, imagePath, category, sku } = req.query;
 
     const product = new Product({
         id,
         productName,
-        quantity, 
+        quantity,
         mPrice,
         sPrice,
-        imagePath, 
-        category, 
+        imagePath,
+        category,
         sku
 
     });
-    product.save((err,doc)=>{
-        if(err) return res.status(500).jsonp({error:err});
+    product.save((err, doc) => {
+        if (err) return res.status(500).jsonp({ error: err });
         else {
             res.status(200).json({
-                message:"Data recived Successfully",
-                document:doc
+                message: "Data recived Successfully",
+                document: doc
             });
         }
     });
 };
 
-export const listProduct = (req: Request, res: Response,next: NextFunction)=>{
-    const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
-    
-Product.find((err: any,value: any)=>{
-    for (const t in value)
-    {
-    fs.readdirSync(UPLOAD_PATH+value[t].imagePath).forEach(file => {
-        value[t].imagePath = `http://192.168.0.101:3000/static/${value[t].imagePath+"/"+file}`;
-      });
+export const listProduct = (req: Request, res: Response, next: NextFunction) => {
+    // const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
+    const UPLOAD_PATH = " /home/anragkush/anil-backend/imagesPublic";
+
+    Product.find((err: any, value: any) => {
+        for (const t in value) {
+            fs.readdirSync(UPLOAD_PATH + value[t].imagePath).forEach(file => {
+                value[t].imagePath = `http://192.168.0.101:3000/static/${value[t].imagePath + "/" + file}`;
+            });
+        }
+        if (err) console.log(err);
+        else return res.status(200).json(value);
+    });
+};
+
+export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
+
+    const deletedRecord = await Product.deleteOne({ id: req.query.id });
+    if (deletedRecord) return res.status(200).jsonp({ item: deletedRecord });
+    else {
+        return res.status(500).jsonp({ message: "Something went Wrong" });
     }
-    if (err) console.log(err);
-    else return res.status(200).json(value);
-});
 };
 
-export const deleteProduct =async (req: Request, res: Response,next: NextFunction)=>{
-    
-const deletedRecord = await Product.deleteOne({id:req.query.id});
-if (deletedRecord) return res.status(200).jsonp({item:deletedRecord});
-else {
-    return res.status(500).jsonp({message:"Something went Wrong"});
-}
-};
-
-export const updateProduct =async (req: Request, res: Response,next: NextFunction)=>{
-    const query = {"id": req.query.id};
-    const {_id,id,productName,quantity,mPrice,sPrice,imagePath,category,sku} = req.query;
+export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
+    const query = { "id": req.query.id };
+    const { _id, id, productName, quantity, mPrice, sPrice, imagePath, category, sku } = req.query;
     const product = new Product({
         id,
         productName,
-        quantity, 
+        quantity,
         mPrice,
         sPrice,
-        imagePath, 
-        category, 
+        imagePath,
+        category,
         sku
 
     });
-   const filter = {id};
-   const  updateValue = {productName,quantity,mPrice,sPrice,imagePath,category,sku};
+    const filter = { id };
+    const updateValue = { productName, quantity, mPrice, sPrice, imagePath, category, sku };
 
-   const doc = await Product.findOneAndUpdate(filter,updateValue,{useFindAndModify: false});
-   
-   res.jsonp(doc);
+    const doc = await Product.findOneAndUpdate(filter, updateValue, { useFindAndModify: false });
 
-    };
-    
+    res.jsonp(doc);
+
+};
 
 
-export const otpCheck =  async(req: Request, res: Response,next: NextFunction) => {
-    await check("phoneNumber", "PhoneLenght is 10").isLength({min:10,max:10}).run(req);
+
+export const otpCheck = async (req: Request, res: Response, next: NextFunction) => {
+    await check("phoneNumber", "PhoneLenght is 10").isLength({ min: 10, max: 10 }).run(req);
     // await check("phoneNumber", "PhoneLenght is 10").isNumeric().run(req);
-    await check("code", "Password cannot be blank").isLength({min:4,max:4}).run(req);
+    await check("code", "Password cannot be blank").isLength({ min: 4, max: 4 }).run(req);
     // await check("code", "Password cannot be blank").isNumeric().run(req);
 
     console.log(req.body);
     req.setEncoding("hello");
-   
-  
+
+
 };
-export const sendMessageApi = (req: Request, res: Response,next: NextFunction) =>{
+export const sendMessageApi = (req: Request, res: Response, next: NextFunction) => {
     const num = Math.floor(1000 + Math.random() * 9000);
-    
+
     const message = new Message({
         phoneNumber: req.body.phoneNumber,
         code: num,
-        status:false
+        status: false
     });
     Message.findOne({ phoneNumber: req.body.phoneNumber }, (err, existingUser) => {
         if (err) { return next(err); }
         if (existingUser) {
             req.flash("errors", { msg: "Account with that phoneNumber address already exists." });
-            return res.status(409).json({Message:"Account Already Exists !!"});;
+            return res.status(409).json({ Message: "Account Already Exists !!" });;
         }
         message.save((err) => {
             if (err) { return next(err); }
@@ -135,13 +135,13 @@ export const sendMessageApi = (req: Request, res: Response,next: NextFunction) =
                 if (err) {
                     return next(err);
                 }
-                sendMessage({code:num,userNumber: req.body.phoneNumber});
-                res.status(200).json({Message:"Account Created Succesfully !!"});;
+                sendMessage({ code: num, userNumber: req.body.phoneNumber });
+                res.status(200).json({ Message: "Account Created Succesfully !!" });;
             });
         });
     });
 
-   
+
 };
 
 /**
@@ -165,14 +165,14 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
     passport.authenticate("local", (err: Error, user: UserDocument, info: IVerifyOptions) => {
         if (err) { return next(err); }
         if (!user) {
-            console.log("ERROR",user);
+            console.log("ERROR", user);
             // res.send(errors.array());
             // req.flash("errors", {msg: info.message});
-             return res.status(401).json({Message:"Invalid Used"});
+            return res.status(401).json({ Message: "Invalid Used" });
         }
         req.logIn(user, (err) => {
             if (err) { return next(err); }
-             res.status(200).json({Message:"Login Successfully !!"});
+            res.status(200).json({ Message: "Login Successfully !!" });
             // req.flash("success", { msg: "Success! You are logged in." });
             // res.redirect(req.session.returnTo || "/");
         });
@@ -207,16 +207,16 @@ export const getSignup = (req: Request, res: Response) => {
  */
 export const postSignup = async (req: Request, res: Response, next: NextFunction) => {
     await check("phoneNumber", "phoneNumber is not valid").isMobilePhone("any").run(req);
-    await check("password", "Password must be at least 4 characters long").isLength({ min: 4,max:4 }).run(req);
+    await check("password", "Password must be at least 4 characters long").isLength({ min: 4, max: 4 }).run(req);
     // await check("confirmPassword", "Passwords do not match").equals(req.body.password).run(req);
     // eslint-disable-next-line @typescript-eslint/camelcase
     // await sanitize("phoneNumber").normalizeEmail({ gmail_remove_dots: false }).run(req);
-        console.log(req.body);
+    console.log(req.body);
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
         console.log(errors.array());
-        return res.status(400).json({Message:"Something Went Wrong"});
+        return res.status(400).json({ Message: "Something Went Wrong" });
     }
 
     const user = new User({
@@ -228,7 +228,7 @@ export const postSignup = async (req: Request, res: Response, next: NextFunction
         if (err) { return next(err); }
         if (existingUser) {
             req.flash("errors", { msg: "Account with that phoneNumber address already exists." });
-            return res.status(409).json({Message:"Account Already Exists !!"});;
+            return res.status(409).json({ Message: "Account Already Exists !!" });;
         }
         user.save((err) => {
             if (err) { return next(err); }
@@ -236,7 +236,7 @@ export const postSignup = async (req: Request, res: Response, next: NextFunction
                 if (err) {
                     return next(err);
                 }
-                res.status(400).json({Message:"Account Created Succesfully !!"});;
+                res.status(400).json({ Message: "Account Created Succesfully !!" });;
             });
         });
     });
