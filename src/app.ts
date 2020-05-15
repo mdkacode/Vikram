@@ -122,7 +122,7 @@ app.post("/productImage", async (req, res) => {
     }
     else {
         infoLog("productImageFILE", [req.query, req.body]);
-        upload.any()(req, res, (err: object) => {
+        upload.any()(req, res, (err) => {
             if (err instanceof multer.MulterError) {
                 console.log(err);
                 return res.send(err);
