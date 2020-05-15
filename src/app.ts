@@ -20,6 +20,7 @@ const MongoStore = mongo(session);
 
 // Controllers (route handlers)
 import * as categoryController from "./controllers/category";
+import * as productController from "./controllers/product";
 
 // API keys and Passport configuration
 import downloadImage from "./util/imageDownload";
@@ -148,6 +149,12 @@ app.post("/category/add", categoryController.addCategory);
 app.post("/category/update", categoryController.updateCategory);
 app.post("/category/delete", categoryController.deleteCategory);
 app.get("/category", categoryController.getCategory);
+
+
+app.post("/product/add", productController.addProduct);
+app.post("/product/update", productController.updateProduct);
+app.post("/product/delete", productController.deleteProduct);
+app.get("/product", productController.getProduct);
 
 
 

@@ -18,6 +18,9 @@ exports.ENVIRONMENT = process.env.NODE_ENV;
 const prod = exports.ENVIRONMENT === "production"; // Anything else is treated as 'dev'
 exports.SESSION_SECRET = process.env["SESSION_SECRET"];
 exports.MONGODB_URI = prod ? process.env["MONGODB_URI"] : process.env["MONGODB_URI_LOCAL"];
+exports.IMAGE_URI = prod ? process.env["UPLOAD_PATH"] : process.env["UPLOAD_PATH_LOCAL"];
+exports.SERVER_IP = prod ? process.env["SERVER_IP"] : process.env["SERVER_IP_LOCAL"];
+exports.NOT_FOUND_IMAGE = process.env["NOT_FOUND_IMAGE"];
 if (!exports.SESSION_SECRET) {
     logger_1.default.error("No client secret. Set SESSION_SECRET environment variable.");
     process.exit(1);

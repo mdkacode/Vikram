@@ -38,6 +38,7 @@ const secrets_1 = require("./util/secrets");
 const MongoStore = connect_mongo_1.default(express_session_1.default);
 // Controllers (route handlers)
 const categoryController = __importStar(require("./controllers/category"));
+const productController = __importStar(require("./controllers/product"));
 // API keys and Passport configuration
 const imageDownload_1 = __importDefault(require("./util/imageDownload"));
 // Create Express server
@@ -108,7 +109,7 @@ app.use(express_1.default.static(path_1.default.join(__dirname, "public"), { max
 /**
  * Primary app routes.
  */
-app.post("/productImage", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/productImage", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.image) {
         loggerInfo_1.infoLog("productImageURL", [req.query, req.body]);
         const imageUrl = req.query.image.toString();
@@ -124,7 +125,7 @@ app.post("/productImage", (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
     else {
         loggerInfo_1.infoLog("productImageFILE", [req.query, req.body]);
-        upload.any()(req, res, function (err) {
+        upload.any()(req, res, (err) => {
             if (err instanceof multer_1.default.MulterError) {
                 console.log(err);
                 return res.send(err);
@@ -145,5 +146,9 @@ app.post("/category/add", categoryController.addCategory);
 app.post("/category/update", categoryController.updateCategory);
 app.post("/category/delete", categoryController.deleteCategory);
 app.get("/category", categoryController.getCategory);
+app.post("/product/add", productController.addProduct);
+app.post("/product/update", productController.updateProduct);
+app.post("/product/delete", productController.deleteProduct);
+app.get("/product", productController.getProduct);
 exports.default = app;
 //# sourceMappingURL=app.js.map
