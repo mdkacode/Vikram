@@ -10,6 +10,7 @@ export interface IproductProps extends Document {
     priceList: { mrp: number; sp: number };
     units: string;
     defaultSize: string;
+    defaultCategory: string;
     description: string;
     imageList: string[];
 }
@@ -21,6 +22,7 @@ const ProductSchema: Schema = new Schema({
     defaultSize: { type: String, required: true, unique: false },
     slug: { type: String, required: true, unique: true },
     units: { type: String, required: true, unique: true },
+    defaultCategory: { type: String, required: false, unique: true },
     priceList: { type: Object, required: true, unique: false },
     imageList: { type: Object, required: false, unique: false },
     createdBy: { type: String, required: true, unique: false },
