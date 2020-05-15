@@ -1,6 +1,6 @@
-import { IMAGE_URI, SERVER_IP } from "../util/secrets";
+import { IMAGE_URI, SERVER_IP, NOT_FOUND_IMAGE } from "../util/secrets";
 import fs from "fs";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { MasterCategory } from "../models/Category";
 /**
@@ -9,6 +9,7 @@ import { MasterCategory } from "../models/Category";
  * @param res 
  */
 export const addCategory = async (req: Request = null, res: Response = null) => {
+
     const Category = new MasterCategory({
         ...req.body
     });
@@ -31,26 +32,39 @@ export const addCategory = async (req: Request = null, res: Response = null) => 
  * @param req | 
  * @param res 
  */
-export const deleteCategory = async (req: Request = null, res: Response = null) => {
+export const deleteCategory = async (req: Request = null, res: Response = null, next: NextFunction) => {
     infoLog("deleteCategory", [req.body, req.query]);
-    MasterCategory.deleteOne({ ...req.body }, (err) => {
-        if (err) {
-            errorLog("deleteCategory => DELETE FAILED ", err, req.method);
-            return res.status(500).json({ message: "Something went Wrong" });
+    if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+
+        return res.status(500).jsonp({ message: "Body is Not Defined" });
+    }
+    try {
+        const doc = await MasterCategory.deleteOne({ ...req.body });
+        if (doc.deletedCount > 0) {
+            infoLog("deleteCategory => SUCCESS", [req.body, req.query, doc]);
+            res.status(200).jsonp({ message: "Item Deleted Successfully", data: doc });
+            next();
         }
-    }).then((result) => {
-        if (result.deletedCount > 0) {
-            infoLog("deleteCategory => SUCCESS", [req.body, req.query, result]);
-            res.status(200).jsonp({ message: "Item Deleted Successfully", data: result });
+        else {
+            infoLog("deleteCategory => NO RECORD FOUND", [req.body, req.query, doc]);
+            res.status(204).jsonp({ message: "Item Not Found !!", data: doc });
         }
-        infoLog("deleteCategory => NO RECORD FOUND", [req.body, req.query, result]);
-        res.status(204).jsonp({ message: "Item Not Found !!", data: result });
-    });
+    }
+    catch (error) {
+        errorLog("deleteCategory => PARAMETER ERROR", error, req.body);
+        return res.status(500).jsonp({ mssage: "Please check parameter/s", error });
+    }
+
+
 };
 
-
+/**
+ * Pass _id to as KEY
+ * @param req | any Body Parameter which wants to get updated 
+ * @param res |
+ */
 export const updateCategory = async (req: Request = null, res: Response = null) => {
-    infoLog("deleteCategory", [req.body, req.query]);
+    infoLog("updateCategory", [req.body, req.query]);
     MasterCategory.findOneAndUpdate({ ...req.query }, { ...req.body }, (err: object) => {
         if (err) {
             errorLog("deleteCategory => UPDATE FAILED ", err, req.method);
@@ -58,14 +72,20 @@ export const updateCategory = async (req: Request = null, res: Response = null) 
         }
 
     }).then((doc: object) => {
-        infoLog("updateCategory", [req.body, req.query, doc]);
-        return res.status(200).json({ message: "Updated Successfuly!!", item: doc });
+        if (!doc) {
+            infoLog("updateCategory", [req.body, req.query, doc]);
+            return res.status(204).json({ message: "Requested Element Not Found !!", item: doc });
+        }
+        else {
+            infoLog("updateCategory", [req.body, req.query, doc]);
+            return res.status(200).json({ message: "Updated Successfuly!!", item: doc });
+        }
+
     });
 };
 
 export const getCategory = async (req: Request = null, res: Response = null) => {
     infoLog("getCategory", [req.body, req.query]);
-    let imageSource: string[] = [];
     const pageOptions = {
         page: parseInt(req.body.page, 10) || 0,
         limit: parseInt(req.body.limit, 10) || 10
@@ -81,28 +101,19 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
             }
             else {
                 {
-                    console.log(doc.length);
+                    let imageSource: string[] = []; // Pushing Image to it
                     for (const t in doc) {
                         if (doc[t]._id) {
-                            console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
-                            try {
-
-                                if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
-                                    console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
-                                    fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                        imageSource.push(`${SERVER_IP}/static/${doc[t]._id + "/" + file}`);
-                                    });
-                                }
-                                else {
-                                    imageSource.push("https://thumbs.dreamstime.com/b/page-not-found-design-template-error-flat-line-concept-link-to-non-existent-document-no-results-magnifying-glass-156396935.jpg");
-                                }
-
+                            infoLog("getCategory => IMAGE FOUND", [req.body, req.query]);
+                            if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
+                                console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
+                                fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
+                                    imageSource.push(`${SERVER_IP}/static/${doc[t]._id + "/" + file}`);
+                                });
                             }
-                            catch (error) {
-                                errorLog("getCategory => FILE NOT FOUND ", error, req.method);
-                                console.log(error);
+                            else {
+                                imageSource.push(NOT_FOUND_IMAGE);
                             }
-
                         }
                         doc[t].imageList = imageSource;
                         imageSource = [];
