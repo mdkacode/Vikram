@@ -1,8 +1,8 @@
+import { IMAGE_URI, SERVER_IP } from "../util/secrets";
 import fs from "fs";
 import { Request, Response } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { MasterCategory } from "../models/Category";
-
 /**
  * @description | Add Category with Image, Name & slug
  * @param req 
@@ -13,12 +13,16 @@ export const addCategory = async (req: Request = null, res: Response = null) => 
         ...req.body
     });
     infoLog("addCategory", [req.body, req.query]);
-    Category.save((err) => {
-        errorLog("addCategory", err, req.method);
-        res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
-    }).then(doc => {
-        infoLog("addCategory => RESPONSE SUCCESS", [req.body, req.query, doc]);
-        res.status(200).jsonp({ message: doc });
+    Category.save((err, doc) => {
+        if (err) {
+            errorLog("addCategory", err, req.method);
+            res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
+        }
+        else {
+            infoLog("addCategory => RESPONSE SUCCESS", [req.body, req.query, doc]);
+            res.status(200).jsonp({ message: doc });
+        }
+
     });
 };
 
@@ -60,8 +64,6 @@ export const updateCategory = async (req: Request = null, res: Response = null) 
 };
 
 export const getCategory = async (req: Request = null, res: Response = null) => {
-    // const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
-    const UPLOAD_PATH = "/home/anragkush/anil-backend/imagesPublic/";
     infoLog("getCategory", [req.body, req.query]);
     let imageSource: string[] = [];
     const pageOptions = {
@@ -81,11 +83,20 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
                 {
                     console.log(doc.length);
                     for (const t in doc) {
-                        if (doc[t].imagepath) {
+                        if (doc[t]._id) {
+                            console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
                             try {
-                                fs.readdirSync(UPLOAD_PATH + doc[t].imagepath).forEach(file => {
-                                    imageSource.push(`http://52.186.14.151:3000/static/${doc[t].imagepath + "/" + file}`);
-                                });
+
+                                if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
+                                    console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
+                                    fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
+                                        imageSource.push(`${SERVER_IP}/static/${doc[t]._id + "/" + file}`);
+                                    });
+                                }
+                                else {
+                                    imageSource.push("https://thumbs.dreamstime.com/b/page-not-found-design-template-error-flat-line-concept-link-to-non-existent-document-no-results-magnifying-glass-156396935.jpg");
+                                }
+
                             }
                             catch (error) {
                                 errorLog("getCategory => FILE NOT FOUND ", error, req.method);
