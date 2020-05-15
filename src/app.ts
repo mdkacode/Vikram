@@ -106,7 +106,7 @@ app.use(
  */
 
 
-app.post("/productImage", async (req, res, next) => {
+app.post("/productImage", async (req, res) => {
     if (req.query.image) {
         infoLog("productImageURL", [req.query, req.body]);
         const imageUrl = req.query.image.toString();
