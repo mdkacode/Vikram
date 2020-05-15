@@ -37,13 +37,8 @@ const bluebird_1 = __importDefault(require("bluebird"));
 const secrets_1 = require("./util/secrets");
 const MongoStore = connect_mongo_1.default(express_session_1.default);
 // Controllers (route handlers)
-const homeController = __importStar(require("./controllers/home"));
-const userController = __importStar(require("./controllers/user"));
 const categoryController = __importStar(require("./controllers/category"));
-const apiController = __importStar(require("./controllers/api"));
-const contactController = __importStar(require("./controllers/contact"));
 // API keys and Passport configuration
-const passportConfig = __importStar(require("./config/passport"));
 const imageDownload_1 = __importDefault(require("./util/imageDownload"));
 // Create Express server
 const app = express_1.default();
@@ -59,8 +54,6 @@ const UPLOAD_PATH = "imagesPublic/";
 app.set("port", process.env.PORT || 3000);
 app.use(express_1.default.static(__dirname + UPLOAD_PATH));
 app.use("/static", express_1.default.static(UPLOAD_PATH));
-app.set("views", path_1.default.join(__dirname, "../views"));
-app.set("view engine", "pug");
 app.use(compression_1.default());
 app.use(cors_1.default());
 app.use(body_parser_1.default.json());
@@ -152,41 +145,5 @@ app.post("/category/add", categoryController.addCategory);
 app.post("/category/update", categoryController.updateCategory);
 app.post("/category/delete", categoryController.deleteCategory);
 app.get("/category", categoryController.getCategory);
-//category Routes Here START
-app.get("/uploadProduct", userController.uploadProduct);
-app.delete("/deleteProduct", userController.deleteProduct);
-app.get("/listProduct", userController.listProduct);
-app.post("/updateProduct", userController.updateProduct);
-app.get("/", homeController.index);
-app.get("/login", userController.getLogin);
-app.get("/sendMessage", userController.sendMessageApi);
-app.post("/checkMessage", userController.otpCheck);
-app.post("/login", userController.postLogin);
-app.get("/logout", userController.logout);
-app.get("/forgot", userController.getForgot);
-app.post("/forgot", userController.postForgot);
-app.get("/reset/:token", userController.getReset);
-app.post("/reset/:token", userController.postReset);
-app.get("/signup", userController.getSignup);
-app.post("/signup", userController.postSignup);
-app.get("/contact", contactController.getContact);
-app.post("/contact", contactController.postContact);
-app.get("/account", passportConfig.isAuthenticated, userController.getAccount);
-app.post("/account/profile", passportConfig.isAuthenticated, userController.postUpdateProfile);
-app.post("/account/password", passportConfig.isAuthenticated, userController.postUpdatePassword);
-app.post("/account/delete", passportConfig.isAuthenticated, userController.postDeleteAccount);
-app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);
-/**
- * API examples routes.
- */
-app.get("/api", apiController.getApi);
-app.get("/api/facebook", passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getFacebook);
-/**
- * OAuth authentication routes. (Sign in)
- */
-app.get("/auth/facebook", passport_1.default.authenticate("facebook", { scope: ["email", "public_profile"] }));
-app.get("/auth/facebook/callback", passport_1.default.authenticate("facebook", { failureRedirect: "/login" }), (req, res) => {
-    res.redirect(req.session.returnTo || "/");
-});
 exports.default = app;
 //# sourceMappingURL=app.js.map

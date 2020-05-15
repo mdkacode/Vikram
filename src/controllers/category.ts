@@ -2,43 +2,60 @@ import fs from "fs";
 import { Request, Response } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { MasterCategory } from "../models/Category";
+
+/**
+ * @description | Add Category with Image, Name & slug
+ * @param req 
+ * @param res 
+ */
 export const addCategory = async (req: Request = null, res: Response = null) => {
     const Category = new MasterCategory({
         ...req.body
     });
     infoLog("addCategory", [req.body, req.query]);
-    Category.save((err, doc) => {
-        if (err) {
-            errorLog("addCategory", err, req.method);
-            res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
-        }
-        else {
-            infoLog("addCategory => RESPONSE SUCCESS", [req.body, req.query, doc]);
-            res.status(200).jsonp({ message: doc });
-        }
+    Category.save((err) => {
+        errorLog("addCategory", err, req.method);
+        res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
+    }).then(doc => {
+        infoLog("addCategory => RESPONSE SUCCESS", [req.body, req.query, doc]);
+        res.status(200).jsonp({ message: doc });
     });
 };
 
+/**
+ * Pass _id to delete the element
+ * @param req | 
+ * @param res 
+ */
 export const deleteCategory = async (req: Request = null, res: Response = null) => {
     infoLog("deleteCategory", [req.body, req.query]);
-    MasterCategory.deleteOne({ ...req.body }, (err, doc) => {
+    MasterCategory.deleteOne({ ...req.body }, (err) => {
         if (err) {
             errorLog("deleteCategory => DELETE FAILED ", err, req.method);
             return res.status(500).json({ message: "Something went Wrong" });
         }
-        else return res.status(200).json({ item: doc.deletedCount == 0 ? "No Item Found" : doc });
+    }).then((result) => {
+        if (result.deletedCount > 0) {
+            infoLog("deleteCategory => SUCCESS", [req.body, req.query, result]);
+            res.status(200).jsonp({ message: "Item Deleted Successfully", data: result });
+        }
+        infoLog("deleteCategory => NO RECORD FOUND", [req.body, req.query, result]);
+        res.status(204).jsonp({ message: "Item Not Found !!", data: result });
     });
 };
 
 
 export const updateCategory = async (req: Request = null, res: Response = null) => {
     infoLog("deleteCategory", [req.body, req.query]);
-    MasterCategory.findOneAndUpdate({ ...req.query }, { ...req.body }, { useFindAndModify: false }, (err, doc) => {
+    MasterCategory.findOneAndUpdate({ ...req.query }, { ...req.body }, (err: object) => {
         if (err) {
             errorLog("deleteCategory => UPDATE FAILED ", err, req.method);
             return res.status(500).json({ message: "Something went Wrong" });
         }
-        else return res.status(200).json({ item: doc });
+
+    }).then((doc: object) => {
+        infoLog("updateCategory", [req.body, req.query, doc]);
+        return res.status(200).json({ message: "Updated Successfuly!!", item: doc });
     });
 };
 
@@ -46,11 +63,10 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
     // const UPLOAD_PATH = "/Users/anrag/Documents/saumi/TypeScript-Node-Starter/imagesPublic/";
     const UPLOAD_PATH = "/home/anragkush/anil-backend/imagesPublic/";
     infoLog("getCategory", [req.body, req.query]);
-    let imageSource: any = [];
-    const message: object = [];
+    let imageSource: string[] = [];
     const pageOptions = {
-        page: parseInt(req.query.page, 10) || 0,
-        limit: parseInt(req.query.limit, 10) || 10
+        page: parseInt(req.body.page, 10) || 0,
+        limit: parseInt(req.body.limit, 10) || 10
     };
 
     MasterCategory.find()
@@ -66,18 +82,22 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
                     console.log(doc.length);
                     for (const t in doc) {
                         if (doc[t].imagepath) {
-                            fs.readdirSync(UPLOAD_PATH + doc[t].imagepath).forEach(file => {
-                                imageSource.push(`http://52.186.14.151:3000/static/${doc[t].imagepath + "/" + file}`);
-                            });
+                            try {
+                                fs.readdirSync(UPLOAD_PATH + doc[t].imagepath).forEach(file => {
+                                    imageSource.push(`http://52.186.14.151:3000/static/${doc[t].imagepath + "/" + file}`);
+                                });
+                            }
+                            catch (error) {
+                                errorLog("getCategory => FILE NOT FOUND ", error, req.method);
+                                console.log(error);
+                            }
+
                         }
                         doc[t].imageList = imageSource;
                         imageSource = [];
                     }
-
                 }
-
                 res.status(200).jsonp({ message: doc, size: doc.length });
             }
         });
-
 };
