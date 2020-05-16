@@ -31,7 +31,7 @@ const ShopKeeperSchema: Schema = new Schema({
     address: { type: Object, required: false, unique: false },
     isDelivery: { type: Boolean, required: false, unique: false },
     email: { type: String, required: true, unique: false },
-    gstn: { type: String, required: true, unique: false },
+    gstn: { type: String, required: true, unique: true },
     bankDetailsId: { type: String, required: false, unique: false },
     productListId: { type: String, required: false, unique: false },
     createdBy: { type: String, required: true, unique: false },

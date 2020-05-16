@@ -4,7 +4,7 @@ export interface IshopProductListProps extends Document {
 
     products: [
         {
-            pId: string; cIds: string[];
+            pId: string; cIds: string;
             price: { mrp: number; sp: number };
             sku: number; maxOrderCount: number;
             minOrderCount: number;
@@ -18,7 +18,7 @@ export interface IshopProductListProps extends Document {
 }
 
 const ShopProductsSchema: Schema = new Schema({
-    products: { type: Array, required: true, unique: false },
+    products: { type: Array, required: true, unique: true },
     createdBy: { type: String, required: true, unique: false },
     updatedBy: { type: String, required: true, unique: false },
 }, { timestamps: true });

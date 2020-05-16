@@ -65,7 +65,7 @@ export const deleteShopProductsList = async (req: Request = null, res: Response 
  */
 export const updateShopProductsList = async (req: Request = null, res: Response = null) => {
     infoLog("updateShopProductsList", [req.body, req.query]);
-    ShopProductsList.findOneAndUpdate({ ...req.query }, { ...req.body }, (err: object) => {
+    ShopProductsList.findOneAndUpdate({ ...req.query }, { $addToSet: { products: req.body.products } }, (err: object) => {
         if (err) {
             errorLog("deleteShopProductsList => UPDATE FAILED ", err, req.method);
             return res.status(500).json({ message: "Something went Wrong" });
@@ -114,16 +114,19 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
         page: parseInt(req.body.page, 10) || 0,
         limit: parseInt(req.body.limit, 10) || 10
     };
-    if (req.query.shopId) {
-        ShopProductsList.find({ "_id": req.query.shopId })
+    if (req.query._id) {
+        const projection = { _id: 1, name: 1, subject: 1, "products.$": 1 }; // for searching the produts by Category
+        ShopProductsList.find({ ...req.query }, req.query["products.cIds"] && projection)
             .skip(pageOptions.page * pageOptions.limit)
             .limit(pageOptions.limit)
             .exec(async (err, doc) => {
-                if (err) {
+
+                if (err || doc.length == 0) {
                     errorLog("getNamedShopProductsList => GET FAILED ", err, req.method);
-                    return res.status(500).jsonp({ "messge": "Something Went Wrong !!", error: err });
+                    return res.status(500).jsonp({ "messge": "Something Went Wrong !!", error: err, suggestion: "Please try with storeProductListId" });
                 }
                 else {
+
                     const productList: object[] = [];
 
                     infoLog("getNamedShopProductsList ==> SUCCESS", [req.body, req.query]);

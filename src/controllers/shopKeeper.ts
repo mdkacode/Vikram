@@ -3,6 +3,7 @@ import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { ShopKeeper } from "../models/shopKeeperModel";
+import { ShopProductsList } from "../models/ShopProductListModel";
 /**
  * @description | Add ShopKeeper with Image, Name & slug
  * @param req 
@@ -10,21 +11,37 @@ import { ShopKeeper } from "../models/shopKeeperModel";
  */
 export const addShopKeeper = async (req: Request = null, res: Response = null) => {
 
-    const shopKeeper = new ShopKeeper({
-        ...req.body
-    });
+
     infoLog("addShopKeeper", [req.body, req.query]);
-    shopKeeper.save((err, doc) => {
+    const newStore = new ShopProductsList({
+        products: [],
+        createdBy: "admin",
+        updatedBy: "admin"
+    });
+    await newStore.save((err, storeDoc) => {
         if (err) {
             errorLog("addShopKeeper", err, req.method);
-            res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
+            res.status(500).jsonp({ message: "Store Creation Failed !!", error: err });
         }
         else {
-            infoLog("addShopKeeper => RESPONSE SUCCESS", [req.body, req.query, doc]);
-            res.status(200).jsonp({ message: doc });
-        }
+            const shopKeeper = new ShopKeeper({
+                ...req.body,
+                productListId: storeDoc._id
+            });
+            shopKeeper.save((err, doc) => {
+                if (err) {
+                    errorLog("addShopKeeper", err, req.method);
+                    res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
+                }
+                else {
+                    infoLog("addShopKeeper => RESPONSE SUCCESS", [req.body, req.query, doc]);
+                    res.status(200).jsonp({ message: doc });
+                }
+            });
 
+        }
     });
+
 };
 
 /**
@@ -106,14 +123,12 @@ export const getShopKeeper = async (req: Request = null, res: Response = null) =
                         if (doc[t]._id) {
                             infoLog("getShopKeeper => IMAGE FOUND", [req.body, req.query]);
                             if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
-                                console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
                                     imageSource.push(`${SERVER_IP}/static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {
                                 imageSource.push(NOT_FOUND_IMAGE);
-                                console.log(imageSource);
                             }
                         }
                         doc[t].imageList = imageSource;
