@@ -12,6 +12,7 @@ export interface IproductProps extends Document {
     defaultSize: string;
     defaultCategory: string;
     description: string;
+    _doc: object; // to get internal object and remove error
     imageList: string[];
 }
 

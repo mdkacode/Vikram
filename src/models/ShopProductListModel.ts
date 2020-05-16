@@ -2,13 +2,16 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IshopProductListProps extends Document {
 
-    products: {
-        pId: string; cIds: string[];
-        price: { mrp: number; sp: number };
-        sku: number; maxOrderCount: number;
-        minOrderCount: number;
-        isAvailable: boolean;
-    };
+    products: [
+        {
+            pId: string; cIds: string[];
+            price: { mrp: number; sp: number };
+            sku: number; maxOrderCount: number;
+            minOrderCount: number;
+            isAvailable: boolean;
+        }
+    ]
+    ;
     createdBy: string;
     updatedBy: string;
 
