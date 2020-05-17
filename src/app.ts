@@ -43,7 +43,7 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUni
 
 const UPLOAD_PATH = "imagesPublic/";
 // Express configuration
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3001);
 app.use(express.static(__dirname + UPLOAD_PATH));
 app.use("/static", express.static(UPLOAD_PATH));
 
