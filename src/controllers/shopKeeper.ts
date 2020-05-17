@@ -49,6 +49,19 @@ export const addShopKeeper = async (req: Request = null, res: Response = null) =
  * @param req | 
  * @param res 
  */
+
+
+export const validateShopKeeper = async (req: Request = null, res: Response = null, next: NextFunction) => {
+
+    const validData = await ShopKeeper.find().where({ email: req.body.email, gstn: req.body.gstn });
+    if (validateShopKeeper) {
+        res.send(validData);
+    }
+    else {
+        res.send("Something Went Wrong");
+    }
+};
+
 export const deleteShopKeeper = async (req: Request = null, res: Response = null, next: NextFunction) => {
     infoLog("deleteShopKeeper", [req.body, req.query]);
     if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
@@ -85,13 +98,13 @@ export const updateShopKeeper = async (req: Request = null, res: Response = null
     ShopKeeper.findOneAndUpdate({ ...req.query }, { ...req.body }, (err: object) => {
         if (err) {
             errorLog("deleteShopKeeper => UPDATE FAILED ", err, req.method);
-            return res.status(500).json({ message: "Something went Wrong" });
+            return res.status(500).json({ message: [], item: "Something went Wrong" });
         }
 
     }).then((doc: object) => {
         if (!doc) {
             infoLog("updateShopKeeper", [req.body, req.query, doc]);
-            return res.status(204).json({ message: "Requested Element Not Found !!", item: doc });
+            return res.status(204).json({ message: [], item: "Requested Element Not Found !!" });
         }
         else {
             infoLog("updateShopKeeper", [req.body, req.query, doc]);
@@ -114,7 +127,7 @@ export const getShopKeeper = async (req: Request = null, res: Response = null) =
         .exec((err, doc) => {
             if (err) {
                 errorLog("getShopKeeper => GET FAILED ", err, req.method);
-                return res.status(500).jsonp({ "messge": "Something Went Wrong !!", error: err });
+                return res.status(500).jsonp({ "messge": [], error: "Something Went Wrong !!" });
             }
             else {
                 {
@@ -124,7 +137,7 @@ export const getShopKeeper = async (req: Request = null, res: Response = null) =
                             infoLog("getShopKeeper => IMAGE FOUND", [req.body, req.query]);
                             if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                    imageSource.push(`${SERVER_IP}/static/${doc[t]._id + "/" + file}`);
+                                    imageSource.push(`${SERVER_IP}static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {

@@ -21,6 +21,8 @@ const MongoStore = mongo(session);
 // Controllers (route handlers)
 import * as categoryController from "./controllers/category";
 import * as productController from "./controllers/product";
+import * as shopKeeperController from "./controllers/shopKeeper";
+import * as shopProductListController from "./controllers/shopProductList";
 
 // API keys and Passport configuration
 import downloadImage from "./util/imageDownload";
@@ -144,18 +146,39 @@ app.post("/productImage", async (req, res) => {
  */
 
 
-
+//Category APIs
 app.post("/category/add", categoryController.addCategory);
 app.post("/category/update", categoryController.updateCategory);
 app.post("/category/delete", categoryController.deleteCategory);
 app.get("/category", categoryController.getCategory);
+//Category APIs
 
-
+// Product APIS
 app.post("/product/add", productController.addProduct);
 app.post("/product/update", productController.updateProduct);
 app.post("/product/delete", productController.deleteProduct);
 app.get("/product", productController.getProduct);
+app.get("/product/one", productController.getSingleProduct);
+// Product APIS
 
 
+// Product APIS
+app.post("/shopkeeper/add", shopKeeperController.addShopKeeper);
+app.post("/shopkeeper/update", shopKeeperController.updateShopKeeper);
+app.post("/shopkeeper/delete", shopKeeperController.deleteShopKeeper);
+app.get("/shopkeeper", shopKeeperController.getShopKeeper);
+app.post("/shopkeeper/validate", shopKeeperController.validateShopKeeper);
+// Product APIS
+
+// ShopProducts APIS
+app.post("/ShopProducts/add", shopProductListController.addShopProductsList);
+app.post("/ShopProducts/update", shopProductListController.updateShopProductsList);
+app.post("/ShopProducts/delete", shopProductListController.deleteShopProductsList);
+app.get("/ShopProducts", shopProductListController.getShopProductsList);
+
+app.get("/ShopProducts/namelist", shopProductListController.getNamedShopProductsList);
+
+
+// ShopProducts APIS
 
 export default app;

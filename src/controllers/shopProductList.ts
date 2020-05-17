@@ -2,6 +2,7 @@ import Axios from "axios";
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { ShopProductsList } from "../models/ShopProductListModel";
+import { SERVER_IP } from "../util/secrets";
 
 /**
  * @description | Add ShopProductsList with Image, Name & slug
@@ -123,7 +124,7 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
 
                 if (err || doc.length == 0) {
                     errorLog("getNamedShopProductsList => GET FAILED ", err, req.method);
-                    return res.status(500).jsonp({ "messge": "Something Went Wrong !!", error: err, suggestion: "Please try with storeProductListId" });
+                    return res.status(500).jsonp({ "messge": [], error: "Something Went Wrong !!", suggestion: "Please try with storeProductListId" });
                 }
                 else {
 
@@ -136,7 +137,7 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
                         console.log("GETPROUCSLENGTH", doc[0]["products"].length);
                         doc[0]["products"].forEach(async (element, index: number) => {
                             console.log("GET INDEX", index);
-                            const name = await Axios.get(`http://localhost:3000/product/one?pId=${element.pId}`);
+                            const name = await Axios.get(`${SERVER_IP}product/one?pId=${element.pId}`);
                             const products = { ...name.data.data[0], ...element };
                             await productList.push(products);
                             if (index === elementLength - 1) {

@@ -18,7 +18,7 @@ export interface IshopProductListProps extends Document {
 }
 
 const ShopProductsSchema: Schema = new Schema({
-    products: { type: Array, required: true, unique: true },
+    products: { type: Array, required: true, unique: false },
     createdBy: { type: String, required: true, unique: false },
     updatedBy: { type: String, required: true, unique: false },
 }, { timestamps: true });

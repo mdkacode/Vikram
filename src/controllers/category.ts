@@ -105,10 +105,12 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
                     for (const t in doc) {
                         if (doc[t]._id) {
                             infoLog("getCategory => IMAGE FOUND", [req.body, req.query]);
+                            console.log(doc[t]._id, "GETIMAGE");
                             if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
+                                console.log(doc[t]._id, "GETIMAGE");
                                 console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                    imageSource.push(`${SERVER_IP}/static/${doc[t]._id + "/" + file}`);
+                                    imageSource.push(`${SERVER_IP}static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {

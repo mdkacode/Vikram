@@ -8,7 +8,7 @@ export interface IshopKeeperProps extends Document {
     shopDisplayName: string;
     address: { city: string; areaName: string; pinCode: string; cordinates: { lat: string; long: string } };
     email: string;
-    phoneNumbers: { shop: string[]; personal: string[]; delivery: { personName: string; phoneNumber: string } };
+    phoneNumbers: { shop: string; personal: string; delivery: { personName: string; phoneNumber: string } };
     banners: string[];
     promotedProducts: { productIds: string[]; brand: string[] };
     isDelivery: boolean;
