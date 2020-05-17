@@ -45,9 +45,10 @@ const UPLOAD_PATH = "imagesPublic/";
 // Express configuration
 app.set("port", process.env.PORT || 3001);
 app.use(express.static(__dirname + UPLOAD_PATH));
-app.use("/static", express.static(UPLOAD_PATH));
+app.use("/api/static", express.static(UPLOAD_PATH));
 
 app.use(compression());
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -147,38 +148,36 @@ app.post("/productImage", async (req, res) => {
 
 
 //Category APIs
-app.post("/category/add", categoryController.addCategory);
-app.post("/category/update", categoryController.updateCategory);
-app.post("/category/delete", categoryController.deleteCategory);
-app.get("/category", categoryController.getCategory);
+app.post("/api/category/add", categoryController.addCategory);
+app.post("/api/category/update", categoryController.updateCategory);
+app.post("/api/category/delete", categoryController.deleteCategory);
+app.get("/api/category", categoryController.getCategory);
 //Category APIs
 
 // Product APIS
-app.post("/product/add", productController.addProduct);
-app.post("/product/update", productController.updateProduct);
-app.post("/product/delete", productController.deleteProduct);
-app.get("/product", productController.getProduct);
-app.get("/product/one", productController.getSingleProduct);
+app.post("/api/product/add", productController.addProduct);
+app.post("/api/product/update", productController.updateProduct);
+app.post("/api/product/delete", productController.deleteProduct);
+app.get("/api/product", productController.getProduct);
+app.get("/api/product/one", productController.getSingleProduct);
 // Product APIS
 
 
 // Product APIS
-app.post("/shopkeeper/add", shopKeeperController.addShopKeeper);
-app.post("/shopkeeper/update", shopKeeperController.updateShopKeeper);
-app.post("/shopkeeper/delete", shopKeeperController.deleteShopKeeper);
-app.get("/shopkeeper", shopKeeperController.getShopKeeper);
-app.post("/shopkeeper/validate", shopKeeperController.validateShopKeeper);
+app.post("/api/shopkeeper/add", shopKeeperController.addShopKeeper);
+app.post("/api/shopkeeper/update", shopKeeperController.updateShopKeeper);
+app.post("/api/shopkeeper/delete", shopKeeperController.deleteShopKeeper);
+app.get("/api/shopkeeper", shopKeeperController.getShopKeeper);
+app.post("/api/shopkeeper/validate", shopKeeperController.validateShopKeeper);
 // Product APIS
 
 // ShopProducts APIS
-app.post("/ShopProducts/add", shopProductListController.addShopProductsList);
-app.post("/ShopProducts/update", shopProductListController.updateShopProductsList);
-app.post("/ShopProducts/delete", shopProductListController.deleteShopProductsList);
-app.get("/ShopProducts", shopProductListController.getShopProductsList);
+app.post("/api/ShopProducts/add", shopProductListController.addShopProductsList);
+app.post("/api/ShopProducts/update", shopProductListController.updateShopProductsList);
+app.post("/api/ShopProducts/delete", shopProductListController.deleteShopProductsList);
+app.get("/api/ShopProducts", shopProductListController.getShopProductsList);
 
-app.get("/ShopProducts/namelist", shopProductListController.getNamedShopProductsList);
+app.get("/api/ShopProducts/namelist", shopProductListController.getNamedShopProductsList);
 
-
-// ShopProducts APIS
 
 export default app;
