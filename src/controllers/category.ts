@@ -110,7 +110,7 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
                                 console.log(doc[t]._id, "GETIMAGE");
                                 console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                    imageSource.push(`${SERVER_IP}api/static/${doc[t]._id + "/" + file}`);
+                                    imageSource.push(`http://52.186.14.151/api/static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {
