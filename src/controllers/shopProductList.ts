@@ -137,7 +137,7 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
                         console.log("GETPROUCSLENGTH", doc[0]["products"].length);
                         doc[0]["products"].forEach(async (element, index: number) => {
                             console.log("GET INDEX", index);
-                            const name = await Axios.get(`${SERVER_IP}product/one?pId=${element.pId}`);
+                            const name = await Axios.get(`${SERVER_IP}api/product/one?pId=${element.pId}`);
                             const products = { ...name.data.data[0], ...element };
                             await productList.push(products);
                             if (index === elementLength - 1) {
