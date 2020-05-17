@@ -39,6 +39,8 @@ const MongoStore = connect_mongo_1.default(express_session_1.default);
 // Controllers (route handlers)
 const categoryController = __importStar(require("./controllers/category"));
 const productController = __importStar(require("./controllers/product"));
+const shopKeeperController = __importStar(require("./controllers/shopKeeper"));
+const shopProductListController = __importStar(require("./controllers/shopProductList"));
 // API keys and Passport configuration
 const imageDownload_1 = __importDefault(require("./util/imageDownload"));
 // Create Express server
@@ -52,9 +54,9 @@ mongoose_1.default.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: tr
 });
 const UPLOAD_PATH = "imagesPublic/";
 // Express configuration
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3001);
 app.use(express_1.default.static(__dirname + UPLOAD_PATH));
-app.use("/static", express_1.default.static(UPLOAD_PATH));
+app.use("/api/static", express_1.default.static(UPLOAD_PATH));
 app.use(compression_1.default());
 app.use(cors_1.default());
 app.use(body_parser_1.default.json());
@@ -142,13 +144,31 @@ app.post("/productImage", (req, res) => __awaiter(void 0, void 0, void 0, functi
  * Four Routes
  * Add Updated and Delete (Will Only Deactivate it)
  */
-app.post("/category/add", categoryController.addCategory);
-app.post("/category/update", categoryController.updateCategory);
-app.post("/category/delete", categoryController.deleteCategory);
-app.get("/category", categoryController.getCategory);
-app.post("/product/add", productController.addProduct);
-app.post("/product/update", productController.updateProduct);
-app.post("/product/delete", productController.deleteProduct);
-app.get("/product", productController.getProduct);
+//Category APIs
+app.post("/api/category/add", categoryController.addCategory);
+app.post("/api/category/update", categoryController.updateCategory);
+app.post("/api/category/delete", categoryController.deleteCategory);
+app.get("/api/category", categoryController.getCategory);
+//Category APIs
+// Product APIS
+app.post("/api/product/add", productController.addProduct);
+app.post("/api/product/update", productController.updateProduct);
+app.post("/api/product/delete", productController.deleteProduct);
+app.get("/api/product", productController.getProduct);
+app.get("/api/product/one", productController.getSingleProduct);
+// Product APIS
+// Product APIS
+app.post("/api/shopkeeper/add", shopKeeperController.addShopKeeper);
+app.post("/api/shopkeeper/update", shopKeeperController.updateShopKeeper);
+app.post("/api/shopkeeper/delete", shopKeeperController.deleteShopKeeper);
+app.get("/api/shopkeeper", shopKeeperController.getShopKeeper);
+app.post("/api/shopkeeper/validate", shopKeeperController.validateShopKeeper);
+// Product APIS
+// ShopProducts APIS
+app.post("/api/ShopProducts/add", shopProductListController.addShopProductsList);
+app.post("/api/ShopProducts/update", shopProductListController.updateShopProductsList);
+app.post("/api/ShopProducts/delete", shopProductListController.deleteShopProductsList);
+app.get("/api/ShopProducts", shopProductListController.getShopProductsList);
+app.get("/api/ShopProducts/namelist", shopProductListController.getNamedShopProductsList);
 exports.default = app;
 //# sourceMappingURL=app.js.map

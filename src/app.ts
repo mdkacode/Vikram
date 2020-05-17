@@ -83,6 +83,8 @@ const storage = multer.diskStorage({
 const upload = multer({ limits: { fileSize: 8000000 }, storage: storage });
 
 app.use((req, res, next) => {
+    console.log(req.method);
+    console.log(req.url);
     res.locals.user = req.user;
     next();
 });

@@ -105,10 +105,12 @@ exports.getCategory = (req = null, res = null) => __awaiter(void 0, void 0, void
                 for (const t in doc) {
                     if (doc[t]._id) {
                         loggerInfo_1.infoLog("getCategory => IMAGE FOUND", [req.body, req.query]);
+                        console.log(doc[t]._id, "GETIMAGE");
                         if (fs_1.default.existsSync(secrets_1.IMAGE_URI + doc[t]._id)) {
+                            console.log(doc[t]._id, "GETIMAGE");
                             console.log(`image FOUND ${secrets_1.IMAGE_URI + doc[t]._id}`);
                             fs_1.default.readdirSync(secrets_1.IMAGE_URI + doc[t]._id).forEach(file => {
-                                imageSource.push(`${secrets_1.SERVER_IP}/static/${doc[t]._id + "/" + file}`);
+                                imageSource.push(`${secrets_1.SERVER_IP}static/${doc[t]._id + "/" + file}`);
                             });
                         }
                         else {
