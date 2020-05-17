@@ -93,7 +93,7 @@ export const getCategory = async (req: Request = null, res: Response = null) => 
 
     MasterCategory.find()
         .skip(pageOptions.page * pageOptions.limit)
-        .limit(pageOptions.limit)
+        // .limit(pageOptions.limit)
         .exec((err, doc) => {
             if (err) {
                 errorLog("getCategory => GET FAILED ", err, req.method);
