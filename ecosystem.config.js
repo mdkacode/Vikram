@@ -2,7 +2,7 @@ module.exports = {
 	apps: [
 		{
 			name: "Backend-code",
-			script: "./app.js",
+			script: "./dist/server.js",
 			env: {
 				NODE_ENV: "development",
 			},
