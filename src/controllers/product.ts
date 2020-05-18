@@ -126,8 +126,7 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
 
 export const getSingleProduct = async (req: Request = null, res: Response = null, pId: any = null) => {
     // infoLog("getSingleProduct", [req.body, req.query]);
-    let ssdss = {}
-    let dssata = {}
+    let dssata: object = {};
     await MasterProductList.find({ "_id": typeof pId === "string" ? pId : req.query.pId }, (err, doc) => {
         if (err) {
             errorLog("getSingleProduct => GET FAILED ", err, req.method);
