@@ -127,8 +127,8 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
 export const getSingleProduct = async (req: Request = null, res: Response = null, pId: any = null) => {
     // infoLog("getSingleProduct", [req.body, req.query]);
     let ssdss = {}
-
-    let dssata = await MasterProductList.find({ "_id": typeof pId === "string" ? pId : req.query.pId }, (err, doc) => {
+    let dssata = {}
+    await MasterProductList.find({ "_id": typeof pId === "string" ? pId : req.query.pId }, (err, doc) => {
         if (err) {
             errorLog("getSingleProduct => GET FAILED ", err, req.method);
             return res.status(500).jsonp({ "messge": "Something Went Wrong !!", error: err });
@@ -153,7 +153,7 @@ export const getSingleProduct = async (req: Request = null, res: Response = null
                     imageSource = [];
                 }
             }
-
+            dssata = doc;
             !(typeof pId === "string") && res.status(200).jsonp({ data: doc, size: doc.length });
         }
     });
