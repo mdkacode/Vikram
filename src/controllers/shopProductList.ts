@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { ShopProductsList } from "../models/ShopProductListModel";
 import { SERVER_IP } from "../util/secrets";
+import { getSingleProduct } from "./product";
 
 /**
  * @description | Add ShopProductsList with Image, Name & slug
@@ -109,19 +110,20 @@ export const getShopProductsList = async (req: Request = null, res: Response = n
 
 
 export const getNamedShopProductsList = async (req: Request = null, res: Response = null) => {
-    infoLog("getNamedShopProductsList", [req.body, req.query]);
+    // infoLog("getNamedShopProductsList", [req.body, req.query]);
 
     const pageOptions = {
         page: parseInt(req.body.page, 10) || 0,
         limit: parseInt(req.body.limit, 10) || 10
     };
     if (req.query._id) {
+        console.log('GET IN');
         const projection = { _id: 1, name: 1, subject: 1, "products.$": 1 }; // for searching the produts by Category
         ShopProductsList.find({ ...req.query }, req.query["products.cIds"] && projection)
             .skip(pageOptions.page * pageOptions.limit)
             .limit(pageOptions.limit)
             .exec(async (err, doc) => {
-
+                console.log('GET IN', doc);
                 if (err || doc.length == 0) {
                     errorLog("getNamedShopProductsList => GET FAILED ", err, req.method);
                     return res.status(500).jsonp({ "messge": [], error: "Something Went Wrong !!", suggestion: "Please try with storeProductListId" });
@@ -137,12 +139,14 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
                         console.log("GETPROUCSLENGTH", doc[0]["products"].length);
                         doc[0]["products"].forEach(async (element, index: number) => {
                             console.log("GET INDEX", index);
-                            const name = await Axios.get(`http://localhost:3001/api/product/one?pId=${element.pId}`);
-                            const products = { ...name.data.data[0], ...element };
-                            await productList.push(products);
-                            if (index === elementLength - 1) {
-                                res.status(200).jsonp({ products: productList, length: elementLength });
-                            }
+                            await getSingleProduct(null, null, element.pId).then(async e => {
+                                console.log("ADADDD", e);
+                                const products = { ...e, ...element };
+                                productList.push(products);
+                                if (index === elementLength - 1) {
+                                    res.status(200).jsonp({ products: productList, length: elementLength });
+                                }
+                            });
                         });
                     }
                     else res.status(500).jsonp({ products: [], message: "No Product Found" });
