@@ -89,6 +89,8 @@ const storage = multer_1.default.diskStorage({
 });
 const upload = multer_1.default({ limits: { fileSize: 8000000 }, storage: storage });
 app.use((req, res, next) => {
+    console.log(req.method);
+    console.log(req.url);
     res.locals.user = req.user;
     next();
 });
@@ -111,7 +113,7 @@ app.use(express_1.default.static(path_1.default.join(__dirname, "public"), { max
 /**
  * Primary app routes.
  */
-app.post("/productImage", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/productImage", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.image) {
         loggerInfo_1.infoLog("productImageURL", [req.query, req.body]);
         const imageUrl = req.query.image.toString();
