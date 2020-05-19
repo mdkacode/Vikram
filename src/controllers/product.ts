@@ -92,8 +92,8 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
     };
 
     MasterProductList.find()
-        .skip(pageOptions.page * pageOptions.limit)
-        .limit(pageOptions.limit)
+        // .skip(pageOptions.page * pageOptions.limit)
+        // .limit(pageOptions.limit)
         .exec((err, doc) => {
             if (err) {
                 errorLog("getProduct => GET FAILED ", err, req.method);

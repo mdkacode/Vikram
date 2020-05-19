@@ -118,8 +118,8 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
     if (req.query._id) {
         const projection = { _id: 1, name: 1, subject: 1, "products.$": 1 }; // for searching the produts by Category
         ShopProductsList.find({ ...req.query }, req.query["products.cIds"] && projection)
-            .skip(pageOptions.page * pageOptions.limit)
-            .limit(pageOptions.limit)
+            // .skip(pageOptions.page * pageOptions.limit)
+            // .limit(pageOptions.limit)
             .exec(async (err, doc) => {
 
                 if (err || doc.length == 0) {
