@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { Types } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { ShopProductsList } from "../models/ShopProductListModel";
@@ -107,7 +108,6 @@ export const getShopProductsList = async (req: Request = null, res: Response = n
         });
 };
 
-
 export const getNamedShopProductsList = async (req: Request = null, res: Response = null) => {
     infoLog("getNamedShopProductsList", [req.body, req.query]);
 
@@ -116,12 +116,28 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
         limit: parseInt(req.body.limit, 10) || 10
     };
     if (req.query._id) {
-        const projection = { _id: 1, name: 1, subject: 1, "products.$": 1 }; // for searching the produts by Category
-        ShopProductsList.find({ ...req.query }, req.query["products.cIds"] && projection)
+        const { _id } = req.query as { _id: string };
+        const allProjection = [
+            { $match: { _id: Types.ObjectId(_id) } },
+            { $unwind: "$products" },
+            { $group: { _id: "$_id", products: { $push: "$products" } } }
+        ];
+        const catProjection = [
+            { $match: { _id: Types.ObjectId(_id) } },
+            { $unwind: "$products" },
+            { $match: { "products.cIds": req.query["products.cIds"] } },
+            { $group: { _id: "$_id", products: { $push: "$products" } } }
+        ];
+
+        // taking out Product id from the array
+        ShopProductsList.
+            aggregate(req.query["products.cIds"] ? catProjection : allProjection)
+            // find({ ...req.query }, req.query["products.cIds"] && projection)
             // .skip(pageOptions.page * pageOptions.limit)
             // .limit(pageOptions.limit)
             .exec(async (err, doc) => {
-
+                console.log(err, "GET DATA ERRO");
+                console.log(doc, "GET DATA");
                 if (err || doc.length == 0) {
                     errorLog("getNamedShopProductsList => GET FAILED ", err, req.method);
                     return res.status(500).jsonp({ "messge": [], error: "Something Went Wrong !!", suggestion: "Please try with storeProductListId" });
@@ -133,22 +149,34 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
                     infoLog("getNamedShopProductsList ==> SUCCESS", [req.body, req.query]);
 
                     if (doc[0]["products"].length > 0) {
+                        let tempIds = "";
+                        for (let i = 0, len = doc[0]["products"].length; i < len; i++) {
+
+                            tempIds = tempIds + `${tempIds ? "," : ""}` + doc[0]["products"][i].pId;
+
+                        }
+
+
+
+                        console.log(tempIds, "GET PIDS ");
                         const elementLength = doc[0]["products"].length;
                         console.log("GETPROUCSLENGTH", doc[0]["products"].length);
-                        doc[0]["products"].forEach(async (element, index: number) => {
-                            console.log("GET INDEX", index);
-                            const name = await Axios.get(`http://localhost:3001/api/product/one?pId=${element.pId}`).then(
-                                async response => {
-                                    const products = { ...response.data.data[0], ...element };
-                                    productList.push(products);
-                                    if (index === elementLength - 1) {
-                                        res.status(200).jsonp({ products: productList, length: elementLength });
-                                    }
-                                }
-                            );
+                        console.log(doc[0]["products"], "asdfghjklkjhgfdsa");
+                        const data = await Axios("http://localhost:3001/api/product/many?ids=" + tempIds);
 
-                        });
+                        let merged = [];
+                        let reponseData = data.data.data;
+                        for (let i = 0; i < doc[0]["products"].length; i++) {
+                            merged.push({
+                                ...doc[0]["products"][i],
+                                ...(reponseData.find((itmInner: any) => itmInner._id === doc[0]["products"][i].pId))
+                            }
+                            );
+                        }
+                        // let arr3 = arr1.map((item, i) => Object.assign({}, item, arr2[i]));
+                        res.status(200).jsonp({ products: merged, length: elementLength });
                     }
+
                     else res.status(500).jsonp({ products: [], message: "No Product Found" });
 
                 }
