@@ -23,6 +23,7 @@ import * as categoryController from "./controllers/category";
 import * as productController from "./controllers/product";
 import * as shopKeeperController from "./controllers/shopKeeper";
 import * as shopProductListController from "./controllers/shopProductList";
+import * as userAddedCartController from "./controllers/userAddedCartController";
 
 // API keys and Passport configuration
 import downloadImage from "./util/imageDownload";
@@ -155,6 +156,12 @@ app.post("/api/category/update", categoryController.updateCategory);
 app.post("/api/category/delete", categoryController.deleteCategory);
 app.get("/api/category", categoryController.getCategory);
 //Category APIs
+
+
+//USER CART API 
+
+app.post("/api/usercart/add", userAddedCartController.addUserAddedCart);
+app.put("/api/usercart/update/:userId/:storeId", userAddedCartController.updateUserAddedCart);
 
 // Product APIS
 app.post("/api/product/add", productController.addProduct);

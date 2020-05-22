@@ -41,6 +41,7 @@ const categoryController = __importStar(require("./controllers/category"));
 const productController = __importStar(require("./controllers/product"));
 const shopKeeperController = __importStar(require("./controllers/shopKeeper"));
 const shopProductListController = __importStar(require("./controllers/shopProductList"));
+const userAddedCartController = __importStar(require("./controllers/userAddedCartController"));
 // API keys and Passport configuration
 const imageDownload_1 = __importDefault(require("./util/imageDownload"));
 // Create Express server
@@ -152,6 +153,9 @@ app.post("/api/category/update", categoryController.updateCategory);
 app.post("/api/category/delete", categoryController.deleteCategory);
 app.get("/api/category", categoryController.getCategory);
 //Category APIs
+//USER CART API 
+app.post("/api/usercart/add", userAddedCartController.addUserAddedCart);
+app.put("/api/usercart/update/:userId/:storeId", userAddedCartController.updateUserAddedCart);
 // Product APIS
 app.post("/api/product/add", productController.addProduct);
 app.post("/api/product/update", productController.updateProduct);
