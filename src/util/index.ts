@@ -1,6 +1,5 @@
 import fs from "fs";
-import { IMAGE_URI, SERVER_IP, NOT_FOUND_IMAGE } from "./secrets";
-import { infoLog } from "./loggerInfo";
+import { IMAGE_URI, NOT_FOUND_IMAGE } from "./secrets";
 export const imageUrls = (doc: any) => {
     let imageSource: string[] = []; // Pushing Image to it
     for (const t in doc) {

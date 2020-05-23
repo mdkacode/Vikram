@@ -30,8 +30,9 @@ export const addUserAddedCart = async (req: Request = null, res: Response = null
 
 export const updateUserAddedCart = async (req: Request = null, res: Response = null) => {
     infoLog("updateUserAddedCart", [req.body, req.query]);
+
     UserAddedCart.update(
-        { "carts.storeId": req.storeId },
+        { "carts.storeId": req.query.storeId },
         {
             "$push": {
                 "carts": req.body,

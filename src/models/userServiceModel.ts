@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 
 export interface IuserServiceProps extends Document {
+    imageList: string[];
     phoneNumber: string;
     UUID: string;
     userCurrentAddress: object[];
