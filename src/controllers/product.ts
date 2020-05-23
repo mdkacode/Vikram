@@ -109,7 +109,7 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
                             if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
                                 console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                    imageSource.push(`http://52.186.14.151/api/static/${doc[t]._id + "/" + file}`);
+                                    imageSource.push(`https://pluckershop.com/api/static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {
@@ -144,7 +144,7 @@ export const getSingleProduct = async (req: Request = null, res: Response = null
                             if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
                                 console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                    imageSource.push(`http://52.186.14.151/api/static/${doc[t]._id + "/" + file}`);
+                                    imageSource.push(`https://pluckershop.com/api/static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {
@@ -183,7 +183,7 @@ export const getManyProduct = async (req: Request = null, res: Response = null) 
                         if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
                             console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
                             fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                imageSource.push(`http://52.186.14.151/api/static/${doc[t]._id + "/" + file}`);
+                                imageSource.push(`https://pluckershop.com/api/static/${doc[t]._id + "/" + file}`);
                             });
                         }
                         else {
