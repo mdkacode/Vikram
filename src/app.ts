@@ -203,5 +203,6 @@ app.post("/api/user/validate", userServiceController.validateuserService);
 // LOCATION API
 app.get("/api/area", geoController.areaSuggestion);
 app.get("/api/reverseGeoCode", geoController.reverseGeoCode);
+app.get("/api/geoCode", geoController.geoCode);
 
 export default app;

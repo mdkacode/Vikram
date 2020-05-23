@@ -13,16 +13,23 @@ export interface IreverseGeoCodeProps {
     lang: string;
     apiKey: string;
 }
+export interface IgeoCodeProps {
+    at: string; // cordinates
+    lang: string;
+    apiKey: string;
+}
 
 /** 
    * Shopping,
        ** Food and Drink,Drugstore or Pharmacy,Hardware, House and Garden,Bookstore
    */
 const reverseGeoCodeUri = "https://revgeocode.search.hereapi.com/v1/revgeocode";
+const geoCodeApi = "https://geocode.search.hereapi.com/v1/geocode";
+const api = "https://browse.search.hereapi.com/v1/browse";
 
 const autoSuggest = async (props: IautoSuggestProps) => {
 
-    const api = "https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json";
+
     props.apiKey = process.env.MAP_API;
     console.log({ ...props });
     const autoComplete = await Axios(
@@ -33,8 +40,25 @@ const autoSuggest = async (props: IautoSuggestProps) => {
         }
 
     );
-    console.log(autoComplete.data.suggestions);
-    return autoComplete.data.suggestions;
+    console.log(autoComplete.data.items);
+    return autoComplete.data.items;
+};
+
+const geoCode = async (props: IgeoCodeProps) => {
+
+
+    props.apiKey = process.env.MAP_API;
+    console.log({ ...props });
+    const autoComplete = await Axios(
+        {
+            method: "GET",
+            url: geoCodeApi,
+            params: { ...props }
+        }
+
+    );
+    console.log(autoComplete.data.items);
+    return autoComplete.data.items;
 };
 
 const reverseGeoCode = async (props: IreverseGeoCodeProps) => {
@@ -51,7 +75,7 @@ const reverseGeoCode = async (props: IreverseGeoCodeProps) => {
     console.log(autoComplete.data.items);
     return autoComplete.data.items;
 };
-export default { autoSuggest, reverseGeoCode };
+export default { autoSuggest, reverseGeoCode, geoCode };
 
 
 // //apiKey:1E4jvkyA1hk3uvH4cOlrbYq7GK8xA9CRN0j8JxeS5xU
