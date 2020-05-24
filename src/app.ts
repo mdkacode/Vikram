@@ -181,6 +181,7 @@ app.post("/api/shopkeeper/update", shopKeeperController.updateShopKeeper);
 app.post("/api/shopkeeper/delete", shopKeeperController.deleteShopKeeper);
 app.get("/api/shopkeeper", shopKeeperController.getShopKeeper);
 app.post("/api/shopkeeper/validate", shopKeeperController.validateShopKeeper);
+app.get("/api/shopkeeper/bygeo", shopProductListController.nearByShops);
 // Product APIS
 
 // ShopProducts APIS
@@ -188,8 +189,9 @@ app.post("/api/ShopProducts/add", shopProductListController.addShopProductsList)
 app.post("/api/ShopProducts/update", shopProductListController.updateShopProductsList);
 app.post("/api/ShopProducts/delete", shopProductListController.deleteShopProductsList);
 app.get("/api/ShopProducts", shopProductListController.getShopProductsList);
-
 app.get("/api/ShopProducts/namelist", shopProductListController.getNamedShopProductsList);
+app.get("/api/ShopProducts/allProducts", shopProductListController.allProducts);
+
 // ShopProducts APIS
 
 // USER ACCOUNT API START

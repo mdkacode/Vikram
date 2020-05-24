@@ -9,12 +9,12 @@ export interface IautoSuggestProps {
 
 }
 export interface IreverseGeoCodeProps {
-    at: string; // cordinates
+    at: string; // coordinates
     lang: string;
     apiKey: string;
 }
 export interface IgeoCodeProps {
-    at: string; // cordinates
+    at: string; // coordinates
     lang: string;
     apiKey: string;
 }
