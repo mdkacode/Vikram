@@ -199,8 +199,8 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
 
     ShopProductsList.find({ _id: shopIds.split(",") }).then(async (doc) => {
         const aggregatedProdcutList = [];
-        const productIds = [];
-        const pidshopList = [];
+        const productIds: string[] = [];
+        const pidshopList: { pId: string; cIds: string; shop_id: any; }[] = [];
 
         doc.map(async (e) => {
             e.products["shopId"] = e._id;
@@ -217,10 +217,10 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
         // console.log(e.products)
         const dataa = await Axios("http://localhost:3001/api/product/many?ids=" + productIds.join());
 
-        const masterarry = [];
+        const masterarry: unknown[] = [];
 
 
-        let areaProducts = await Promise.map(dataa.data.data, async e => {
+        const areaProducts = await Promise.map(dataa.data.data, async e => {
             pidshopList.find(async (item) => {
                 if (item.pId === e._id) {
 
@@ -229,7 +229,7 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
                 }
             });
             return masterarry;
-        })
+        });
         // let dataaaa = await Promise.all(dataa.data.data.map(e =>));
         res.status(200).json({ products: areaProducts, length: areaProducts.length });
     });
