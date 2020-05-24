@@ -202,7 +202,7 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
         const productIds = [];
         const pidshopList = [];
 
-        let data = doc.map(async (e) => {
+        doc.map(async (e) => {
             e.products["shopId"] = e._id;
             e.products.map(q => {
                 q["shop_id"] = e._id;
@@ -240,6 +240,7 @@ export const nearByShops = async (req: Request = null, res: Response = null) => 
 
     const longitude = req.query.long;
     const lattitude = req.query.lat;
+    const distance = req.query.distance;
     const getData = await ShopKeeper.find({
         loc: {
             $near: {
@@ -247,7 +248,7 @@ export const nearByShops = async (req: Request = null, res: Response = null) => 
                     type: "Point",
                     coordinates: [parseFloat(longitude), parseFloat(lattitude)]
                 },
-                $maxDistance: 2000
+                $maxDistance: parseInt(distance) || 2000
             }
         }
     });
