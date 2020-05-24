@@ -249,7 +249,7 @@ export const nearByShops = async (req: Request = null, res: Response = null) => 
                     type: "Point",
                     coordinates: [parseFloat(longitude), parseFloat(lattitude)]
                 },
-                $maxDistance: parseInt(distance) || 2000
+                $maxDistance: parseInt(distance) || 4000
             }
         }
     });
