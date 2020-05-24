@@ -4,6 +4,9 @@ import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { ShopProductsList } from "../models/ShopProductListModel";
 import { SERVER_IP } from "../util/secrets";
+import { ShopKeeper } from "../models/shopKeeperModel";
+import { Promise } from "bluebird";
+
 
 /**
  * @description | Add ShopProductsList with Image, Name & slug
@@ -164,8 +167,8 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
                         console.log(doc[0]["products"], "asdfghjklkjhgfdsa");
                         const data = await Axios("http://localhost:3001/api/product/many?ids=" + tempIds);
 
-                        let merged = [];
-                        let reponseData = data.data.data;
+                        const merged = [];
+                        const reponseData = data.data.data;
                         for (let i = 0; i < doc[0]["products"].length; i++) {
                             merged.push({
                                 ...doc[0]["products"][i],
@@ -188,4 +191,66 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
     }
 
 
+};
+
+export const allProducts = async (req: Request = null, res: Response = null) => {
+
+    const shopIds = req.query.shopIds;
+
+    ShopProductsList.find({ _id: shopIds.split(",") }).then(async (doc) => {
+        const aggregatedProdcutList = [];
+        const productIds: string[] = [];
+        const pidshopList: { pId: string; cIds: string; shop_id: any; }[] = [];
+
+        doc.map(async (e) => {
+            e.products["shopId"] = e._id;
+            e.products.map(q => {
+                q["shop_id"] = e._id;
+                productIds.push(q.pId);
+                aggregatedProdcutList.push(q);
+                pidshopList.push({ pId: q.pId, cIds: q.cIds, shop_id: e.products["shopId"] });
+            });
+        });
+
+
+        console.log("qwerty" + productIds.join());
+        // console.log(e.products)
+        const dataa = await Axios("http://localhost:3001/api/product/many?ids=" + productIds.join());
+
+        const masterarry: unknown[] = [];
+
+
+        const areaProducts = await Promise.map(dataa.data.data, async e => {
+            pidshopList.find(async (item) => {
+                if (item.pId === e._id) {
+
+                    e.shopId = item.shop_id;
+                    masterarry.push(e);
+                }
+            });
+            return masterarry;
+        });
+        // let dataaaa = await Promise.all(dataa.data.data.map(e =>));
+        res.status(200).json({ products: areaProducts, length: areaProducts.length });
+    });
+
+};
+
+export const nearByShops = async (req: Request = null, res: Response = null) => {
+
+    const longitude = req.query.long;
+    const lattitude = req.query.lat;
+    const distance = req.query.distance;
+    const getData = await ShopKeeper.find({
+        loc: {
+            $near: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: [parseFloat(longitude), parseFloat(lattitude)]
+                },
+                $maxDistance: parseInt(distance) || 2000
+            }
+        }
+    });
+    res.status(200).jsonp({ message: getData });
 };

@@ -22,9 +22,11 @@ const MongoStore = mongo(session);
 import * as categoryController from "./controllers/category";
 import * as productController from "./controllers/product";
 import * as shopKeeperController from "./controllers/shopKeeper";
+import * as userServiceController from "./controllers/userServiceController";
 import * as shopProductListController from "./controllers/shopProductList";
 import * as userAddedCartController from "./controllers/userAddedCartController";
 
+import * as geoController from "./controllers/geoController";
 // API keys and Passport configuration
 import downloadImage from "./util/imageDownload";
 
@@ -179,6 +181,7 @@ app.post("/api/shopkeeper/update", shopKeeperController.updateShopKeeper);
 app.post("/api/shopkeeper/delete", shopKeeperController.deleteShopKeeper);
 app.get("/api/shopkeeper", shopKeeperController.getShopKeeper);
 app.post("/api/shopkeeper/validate", shopKeeperController.validateShopKeeper);
+app.get("/api/shopkeeper/bygeo", shopProductListController.nearByShops);
 // Product APIS
 
 // ShopProducts APIS
@@ -186,8 +189,22 @@ app.post("/api/ShopProducts/add", shopProductListController.addShopProductsList)
 app.post("/api/ShopProducts/update", shopProductListController.updateShopProductsList);
 app.post("/api/ShopProducts/delete", shopProductListController.deleteShopProductsList);
 app.get("/api/ShopProducts", shopProductListController.getShopProductsList);
-
 app.get("/api/ShopProducts/namelist", shopProductListController.getNamedShopProductsList);
+app.get("/api/ShopProducts/allProducts", shopProductListController.allProducts);
 
+// ShopProducts APIS
+
+// USER ACCOUNT API START
+app.post("/api/user/add", userServiceController.adduserService);
+app.post("/api/user/update", userServiceController.updateuserService);
+app.post("/api/user/delete", userServiceController.deleteuserService);
+app.get("/api/user", userServiceController.getuserService);
+app.post("/api/user/validate", userServiceController.validateuserService);
+// USER ACCOUNT API END
+
+// LOCATION API
+app.get("/api/area", geoController.areaSuggestion);
+app.get("/api/reverseGeoCode", geoController.reverseGeoCode);
+app.get("/api/geoCode", geoController.geoCode);
 
 export default app;

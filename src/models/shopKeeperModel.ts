@@ -6,7 +6,11 @@ export interface IshopKeeperProps extends Document {
     contactPerson: string;
     imageList: string[];
     shopDisplayName: string;
-    address: { city: string; areaName: string; pinCode: string; cordinates: { lat: string; long: string } };
+    address: { city: string; areaName: string; pinCode: string; type: string };
+    loc: {
+        type: string;
+        coordinates: [number];
+    };
     email: string;
     phoneNumbers: { shop: string; personal: string; delivery: { personName: string; phoneNumber: string } };
     banners: string[];
@@ -29,6 +33,7 @@ const ShopKeeperSchema: Schema = new Schema({
     promotedProducts: { type: Object, required: false, unique: false },
     phoneNumbers: { type: Object, required: false, unique: false },
     address: { type: Object, required: false, unique: false },
+    loc: { type: Object, required: false, index: "2dsphere", unique: false },
     isDelivery: { type: Boolean, required: false, unique: false },
     email: { type: String, required: true, unique: false },
     gstn: { type: String, required: true, unique: true },
@@ -38,6 +43,6 @@ const ShopKeeperSchema: Schema = new Schema({
     updatedBy: { type: String, required: true, unique: false },
 }, { timestamps: true });
 
-
+ShopKeeperSchema.index({ loc: "2dsphere" });
 
 export const ShopKeeper = mongoose.model<IshopKeeperProps>("ShopKeeper", ShopKeeperSchema);
