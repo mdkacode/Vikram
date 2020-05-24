@@ -200,7 +200,7 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
     ShopProductsList.find({ _id: shopIds.split(",") }).then(async (doc) => {
         const aggregatedProdcutList = [];
         const productIds: string[] = [];
-        const pidshopList: { pId: string; cIds: string; shop_id: any; }[] = [];
+        const pidshopList: { pId: string; cIds: string; shop_id: any;, price: object }[] = [];
 
         doc.map(async (e) => {
             e.products["shopId"] = e._id;
@@ -208,7 +208,7 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
                 q["shop_id"] = e._id;
                 productIds.push(q.pId);
                 aggregatedProdcutList.push(q);
-                pidshopList.push({ pId: q.pId, cIds: q.cIds, shop_id: e.products["shopId"] });
+                pidshopList.push({ ...q });
             });
         });
 
@@ -220,18 +220,19 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
         const masterarry: unknown[] = [];
 
 
-        const areaProducts = await Promise.map(dataa.data.data, async e => {
-            pidshopList.find(async (item) => {
+        const areaProducts = await Promise.map(dataa.data.data, e => {
+            pidshopList.find((item) => {
                 if (item.pId === e._id) {
 
                     e.shopId = item.shop_id;
-                    masterarry.push(e);
+
+                    masterarry.push({ ...item, ...e });
                 }
             });
             return masterarry;
         });
         // let dataaaa = await Promise.all(dataa.data.data.map(e =>));
-        res.status(200).json({ products: areaProducts, length: areaProducts.length });
+        res.status(200).json({ products: masterarry, length: areaProducts.length });
     });
 
 };
