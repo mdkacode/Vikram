@@ -2,7 +2,10 @@ import { IMAGE_URI, SERVER_IP, NOT_FOUND_IMAGE } from "../util/secrets";
 import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
-import { IuserServiceProps, UserService } from "../models/userServiceModel";
+import { User, UserSchema } from "../models/userModel";
+import { UserAddedCart, IuserAddedCart } from "../models/userAddedCartModal";
+
+import messages from "../util/message";
 /**
  * @description | Add UserService with Image, Name & slug
  * @param req 
@@ -10,36 +13,74 @@ import { IuserServiceProps, UserService } from "../models/userServiceModel";
  */
 export const adduserService = async (req: Request = null, res: Response = null) => {
 
-
+    const uniqueNumber = Math.floor(1000 + Math.random() * 9000);;
     infoLog("adduserService", [req.body, req.query]);
-    const newStore = new UserService({
+    const newUser = new User({
         ...req.body,
+        otp: uniqueNumber,
         createdBy: "admin",
         updatedBy: "admin"
     });
-    await newStore.save((err, storeDoc) => {
+    await User.findOne({ phone: req.body.phone }, (err, user) => { // for cheking existing user
+
+        infoLog("FindingNewUser", [req.body, req.query]);
         if (err) {
-            errorLog("adduserService", err, req.method);
-            res.status(500).jsonp({ message: "Store Creation Failed !!", error: err });
+            errorLog("adduserService", [req.body, req.query], "find user Error");
+            res.status(500).json({ message: "something went wrong", trace: err })
         }
         else {
-            const userService = new UserService({
-                ...req.body,
-                productListId: storeDoc._id
-            });
-            userService.save((err, doc) => {
-                if (err) {
-                    errorLog("adduserService", err, req.method);
-                    res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
-                }
-                else {
-                    infoLog("adduserService => RESPONSE SUCCESS", [req.body, req.query, doc]);
-                    res.status(200).jsonp({ message: doc });
-                }
-            });
+            if (!user) {
+                infoLog("AddingNewUser", [req.body, req.query]);
+                newUser.save((err, user) => {
+                    if (err) {
+                        errorLog("adduserService", err, req.method);
+                        res.status(500).jsonp({ message: "Store Creation Failed !!", error: err });
+                    }
+                    else {
+
+                        const cart = new UserAddedCart({ storeId: req.body.phone + "cart", userId: req.body.phone });
+                        cart.save().then((err: object, doc: object) => {
+                            if (err) {
+                                errorLog("NewUserCartError", [req.body.phone], "newCart");
+                            }
+                            else {
+                                infoLog("NewUserCartSucess", [req.body]);
+                            }
+                        });
+                        messages.sendMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                        messages.sendWhatsAppMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                        res.status(200).jsonp({ user });
+
+                    }
+                });
+            }
+            else {
+                User.updateOne({ phone: req.body.phone }, {
+                    otp: uniqueNumber,
+                }, function (err: any, affected: any, user: any) {
+                    if (err) {
+                        errorLog("UpdatedPaswordError", [req.body.phone], "UpdatedPasword");
+                        res.status(500).json({ error: "something went wrong", trace: err });
+                    }
+                    else {
+
+                        if (affected.nModified == 1) {
+                            infoLog("PasswordRequested", [req.body]);
+                            messages.sendMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                            messages.sendWhatsAppMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                            User.find({ phone: req.body.phone }, (err: any, User: object) => {
+                                res.status(200).json({ User });
+                            });
+                        } else res.status(204);
+                    }
+                });
+            }
+
 
         }
     });
+
+
 
 };
 
@@ -52,7 +93,7 @@ export const adduserService = async (req: Request = null, res: Response = null) 
 
 export const validateuserService = async (req: Request = null, res: Response = null, next: NextFunction) => {
 
-    const validData = await UserService.find().where({ phoneNumber: req.body.phone, OTP: req.body.otp });
+    const validData = await User.find().where({ phoneNumber: req.body.phone, OTP: req.body.otp });
     if (validateuserService) {
         res.send(validData);
     }
@@ -68,7 +109,7 @@ export const deleteuserService = async (req: Request = null, res: Response = nul
         return res.status(500).jsonp({ message: "Body is Not Defined" });
     }
     try {
-        const doc = await UserService.deleteOne({ ...req.body });
+        const doc = await User.deleteOne({ ...req.body });
         if (doc.deletedCount > 0) {
             infoLog("deleteuserService => SUCCESS", [req.body, req.query, doc]);
             res.status(200).jsonp({ message: "Item Deleted Successfully", data: doc });
@@ -94,7 +135,7 @@ export const deleteuserService = async (req: Request = null, res: Response = nul
  */
 export const updateuserService = async (req: Request = null, res: Response = null) => {
     infoLog("updateuserService", [req.body, req.query]);
-    UserService.findOneAndUpdate({ ...req.query }, { ...req.body }, (err: object) => {
+    User.findOneAndUpdate({ ...req.query }, { ...req.body }, (err: object) => {
         if (err) {
             errorLog("deleteuserService => UPDATE FAILED ", err, req.method);
             return res.status(500).json({ message: [], item: "Something went Wrong" });
@@ -120,7 +161,7 @@ export const getuserService = async (req: Request = null, res: Response = null) 
         limit: parseInt(req.body.limit, 10) || 10
     };
 
-    UserService.find()
+    User.find()
         .skip(pageOptions.page * pageOptions.limit)
         .limit(pageOptions.limit)
         .exec((err, doc) => {
