@@ -5,6 +5,7 @@ import compression from "compression";  // compresses requests
 import session from "express-session";
 import bodyParser from "body-parser";
 import multer from "multer";
+import cloudinary from "cloudinary";
 import cors from "cors";
 import fs from "fs";
 import lusca from "lusca";
@@ -32,7 +33,14 @@ import downloadImage from "./util/imageDownload";
 
 // Create Express server
 const app = express();
+const imageCdn = cloudinary.v2;
+imageCdn.config({
+    cloud_name: "vikrant-prod",
+    api_key: "286381342612435",
+    api_secret: "m-ug_mc6cHb8pXzthCIh92I5tbc"
+});
 
+const imageuploadUrl = "cloudinary://286381342612435:m-ug_mc6cHb8pXzthCIh92I5tbc@vikrant-prod";
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI;
 mongoose.Promise = bluebird;

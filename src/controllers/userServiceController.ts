@@ -11,7 +11,7 @@ import messages from "../util/message";
  * @param req 
  * @param res 
  */
-export const adduserService = async (req: Request = null, res: Response = null) => {
+export const adduserService = async (req: Request = null, res: Response = null, next: NextFunction = null) => {
 
     const uniqueNumber = Math.floor(1000 + Math.random() * 9000);;
     infoLog("adduserService", [req.body, req.query]);
@@ -37,19 +37,24 @@ export const adduserService = async (req: Request = null, res: Response = null) 
                         res.status(500).jsonp({ message: "Store Creation Failed !!", error: err });
                     }
                     else {
-
                         const cart = new UserAddedCart({ storeId: req.body.phone + "cart", userId: req.body.phone });
-                        cart.save().then((err: object, doc: object) => {
+
+                        cart.save((err: object, doc: object) => {
                             if (err) {
                                 errorLog("NewUserCartError", [req.body.phone], "newCart");
+
                             }
                             else {
                                 infoLog("NewUserCartSucess", [req.body]);
+
                             }
                         });
+
+                        res.status(200).jsonp({ User: [user] });
+
                         // messages.sendMessage({ code: uniqueNumber, userNumber: req.body.phone });
                         // messages.sendWhatsAppMessage({ code: uniqueNumber, userNumber: req.body.phone });
-                        res.status(200).jsonp({ user });
+
 
                     }
                 });
@@ -59,7 +64,7 @@ export const adduserService = async (req: Request = null, res: Response = null) 
                     otp: uniqueNumber,
                 }, function (err: any, affected: any, user: any) {
                     if (err) {
-                        errorLog("UpdatedPaswordError", [req.body.phone], "UpdatedPasword");
+                        errorLog("NewUserCartError", [req.body.phone], "UpdatedPasword");
                         res.status(500).json({ error: "something went wrong", trace: err });
                     }
                     else {
@@ -177,7 +182,7 @@ export const getuserService = async (req: Request = null, res: Response = null) 
                             infoLog("getuserService => IMAGE FOUND", [req.body, req.query]);
                             if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                    imageSource.push(`https://pluckershop.com/api/static/${doc[t]._id + "/" + file}`);
+                                    imageSource.push(`${SERVER_IP}static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {

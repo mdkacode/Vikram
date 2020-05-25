@@ -137,7 +137,7 @@ export const getShopKeeper = async (req: Request = null, res: Response = null) =
                             infoLog("getShopKeeper => IMAGE FOUND", [req.body, req.query]);
                             if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
-                                    imageSource.push(`https://pluckershop.com/api/static/${doc[t]._id + "/" + file}`);
+                                    imageSource.push(`${SERVER_IP}static/${doc[t]._id + "/" + file}`);
                                 });
                             }
                             else {

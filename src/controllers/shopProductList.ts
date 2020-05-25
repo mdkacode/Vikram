@@ -200,7 +200,7 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
     ShopProductsList.find({ _id: shopIds.split(",") }).then(async (doc) => {
         const aggregatedProdcutList = [];
         const productIds: string[] = [];
-        const pidshopList: { pId: string; cIds: string; shop_id: any;, price: object }[] = [];
+        const pidshopList: { pId: string; cIds: string; shop_id: any; price: object }[] = [];
 
         doc.map(async (e) => {
             e.products["shopId"] = e._id;
