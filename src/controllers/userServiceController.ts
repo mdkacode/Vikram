@@ -47,8 +47,8 @@ export const adduserService = async (req: Request = null, res: Response = null) 
                                 infoLog("NewUserCartSucess", [req.body]);
                             }
                         });
-                        messages.sendMessage({ code: uniqueNumber, userNumber: req.body.phone });
-                        messages.sendWhatsAppMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                        // messages.sendMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                        // messages.sendWhatsAppMessage({ code: uniqueNumber, userNumber: req.body.phone });
                         res.status(200).jsonp({ user });
 
                     }
@@ -66,8 +66,8 @@ export const adduserService = async (req: Request = null, res: Response = null) 
 
                         if (affected.nModified == 1) {
                             infoLog("PasswordRequested", [req.body]);
-                            messages.sendMessage({ code: uniqueNumber, userNumber: req.body.phone });
-                            messages.sendWhatsAppMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                            // messages.sendMessage({ code: uniqueNumber, userNumber: req.body.phone });
+                            // messages.sendWhatsAppMessage({ code: uniqueNumber, userNumber: req.body.phone });
                             User.find({ phone: req.body.phone }, (err: any, User: object) => {
                                 res.status(200).json({ User });
                             });
