@@ -22,11 +22,11 @@ export interface User extends Document {
 
 
 const UserSchema: Schema = new Schema({
-    cId: { type: String, required: false, unique: true },   // should be generated at the time of signup by system
+    cId: { type: String, required: false, unique: false },   // should be generated at the time of signup by system
     uuid: { type: String, required: false, unique: false },
     emailId: { type: String, required: false, unique: false },
     isExisting: { type: Boolean, required: false, unique: false },
-    phone: { type: String, required: true, unique: true }, // unique customer identification number
+    phone: { type: String, required: false, unique: true }, // unique customer identification number
     otp: { type: String, required: true, unique: false }, // unique customer identification number
     defaultAddress: { type: String, required: false, unique: false },
     addresses: { type: Array, required: false, unique: false },
