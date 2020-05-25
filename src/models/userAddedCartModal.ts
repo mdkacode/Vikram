@@ -52,7 +52,7 @@ const UserAddedCartSchema: Schema = new Schema({
     units: { type: String, required: false, unique: false },
     updatedBy: { type: String, required: false, unique: false },
     carts: { type: Array, required: true, unique: false },
-    userId: { type: String, required: true, unique: true },
+    userId: { type: String, required: true, unique: false },
 }, { timestamps: true });
 
 
