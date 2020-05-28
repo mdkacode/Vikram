@@ -6,6 +6,7 @@ export interface User extends Document {
     cId: string; // cart id => unique id
     emailId: string;
     uuid: string;
+    name: string;
     isExisting: boolean;
     phone: number;
     otp: number;
@@ -25,6 +26,7 @@ const UserSchema: Schema = new Schema({
     cId: { type: String, required: false, unique: false },   // should be generated at the time of signup by system
     uuid: { type: String, required: false, unique: false },
     emailId: { type: String, required: false, unique: false },
+    name: { type: String, required: false, unique: false },
     isExisting: { type: Boolean, required: false, unique: false },
     phone: { type: String, required: false, unique: true }, // unique customer identification number
     otp: { type: String, required: true, unique: false }, // unique customer identification number

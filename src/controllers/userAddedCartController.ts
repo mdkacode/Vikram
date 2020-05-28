@@ -11,7 +11,10 @@ import { SERVER_IP } from "../util/secrets";
 export const addUserAddedCart = async (req: Request = null, res: Response = null) => {
 
     const userAddedCart = new UserAddedCart({
-        ...req.body
+        "userId": req.query.userId,
+        "carts": {
+            "storeId": req.query.storeId,
+        }
     });
     infoLog("addUserAddedCart", [req.body, req.query]);
     userAddedCart.save((err, doc) => {
@@ -31,11 +34,11 @@ export const addUserAddedCart = async (req: Request = null, res: Response = null
 export const updateUserAddedCart = async (req: Request = null, res: Response = null) => {
     infoLog("updateUserAddedCart", [req.body, req.query]);
 
-    UserAddedCart.update(
-        { "carts.storeId": req.query.storeId },
+    UserAddedCart.updateOne(
+        { "userId": req.query.userId },
         {
-            "$push": {
-                "carts": req.body,
+            "$addToSet": {
+                "carts.prodcuts": req.body,
             }
         },
         { safe: true, upsert: true },
@@ -47,7 +50,7 @@ export const updateUserAddedCart = async (req: Request = null, res: Response = n
 
         }).then((doc: object) => {
             if (!doc) {
-                infoLog("updateUserAddedCart", [req.body, req.query, doc]);
+                infoLog("After", [req.body, req.query, doc]);
                 return res.status(204).json({ message: "Requested Element Not Found !!", item: doc });
             }
             else {
