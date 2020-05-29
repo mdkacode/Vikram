@@ -59,6 +59,8 @@ export const deleteCustomer = async (req: Request = null, res: Response = null, 
 
 };
 
+
+
 /**
  * Pass _id to as KEY
  * @param req | any Body Parameter which wants to get updated

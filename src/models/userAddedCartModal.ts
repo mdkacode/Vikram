@@ -6,6 +6,9 @@ export interface IuserAddedCart extends Document {
     userId: string;
     carts: {
         storeId: string,
+        tranasctionNumber: string;
+        paymentMethod: string;
+        address: string;
         products: {
             brandName: string;
             cIds: string;

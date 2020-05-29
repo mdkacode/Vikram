@@ -171,7 +171,8 @@ app.get("/api/category", categoryController.getCategory);
 //USER CART API 
 
 app.post("/api/usercart/add", userAddedCartController.addUserAddedCart);
-app.put("/api/usercart/update/:userId/:storeId", userAddedCartController.updateUserAddedCart);
+app.put("/api/usercart/update", userAddedCartController.updateUserAddedCart);
+app.get("/api/usercart/find", userAddedCartController.findUserAddedCart);
 
 // Product APIS
 app.post("/api/product/add", productController.addProduct);
@@ -207,6 +208,7 @@ app.post("/api/user/add", userServiceController.adduserService);
 app.post("/api/user/update", userServiceController.updateuserService);
 app.post("/api/user/delete", userServiceController.deleteuserService);
 app.get("/api/user", userServiceController.getuserService);
+app.get("/api/user/one", userServiceController.userInfoService);
 app.post("/api/user/validate", userServiceController.validateuserService);
 // USER ACCOUNT API END
 

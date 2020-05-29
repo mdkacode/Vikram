@@ -29,6 +29,55 @@ export const addUserAddedCart = async (req: Request = null, res: Response = null
 
     });
 };
+export const findUserAddedCart = async (req: Request = null, res: Response = null) => {
+
+    let failedOrderReq = req.query.isFailed;
+
+    UserAddedCart.findOne({ "userId": req.query.userId }, (err: object, doc: object) => {
+        if (err) {
+            errorLog("UserCartGetElement", err, req.method);
+            res.status(500).json({ message: "Something went Wrong !!" });
+        }
+        else {
+            let productsArray = [];
+            let failedOrder = [];
+            if (doc) {
+                if (doc['carts']) {
+                    doc.carts.prodcuts.map(product => {
+                        console.log(product);
+                        if (product.method !== "") {
+                            let amount = 0;
+                            product.prodcucts && product.prodcucts.map(e => {
+                                amount += e.price.sp * e.quantity;
+                            })
+                            productsArray.push({ shopName: product.storeId, orderDate: product.orderDate || '', products: product.prodcucts, total: amount < 500 ? amount + 10 : amount });
+                            console.log("GETPRD", product.products);
+                        }
+                        else {
+                            let amount = 0;
+                            product.prodcucts && product.prodcucts.map(e => {
+                                amount += e.price.sp * e.quantity;
+                            })
+                            failedOrder.push({ shopName: product.storeId, products: product.prodcucts, total: amount < 500 ? amount + 10 : amount });
+                            console.log("GETPRD", product.products);
+                        }
+
+                    })
+                    res.status(200).json({ data: failedOrderReq == 1 ? failedOrder : productsArray, message: `Data Not for ${doc.userId}` });
+                }
+                else {
+                    res.status(200).json({ data: [], message: `Data Not for ${doc.userId}` });
+                }
+
+
+            }
+            else {
+                res.status(200).json({ data: [], message: "Data Not Found" });
+            }
+
+        }
+    })
+};
 
 
 export const updateUserAddedCart = async (req: Request = null, res: Response = null) => {
@@ -38,7 +87,7 @@ export const updateUserAddedCart = async (req: Request = null, res: Response = n
         { "userId": req.query.userId },
         {
             "$addToSet": {
-                "carts.prodcuts": req.body,
+                "carts.prodcuts": { ...req.body },
             }
         },
         { safe: true, upsert: true },

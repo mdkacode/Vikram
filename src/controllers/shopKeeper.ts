@@ -122,8 +122,8 @@ export const getShopKeeper = async (req: Request = null, res: Response = null) =
     };
 
     ShopKeeper.find()
-        .skip(pageOptions.page * pageOptions.limit)
-        .limit(pageOptions.limit)
+        // .skip(pageOptions.page * pageOptions.limit)
+        // .limit(pageOptions.limit)
         .exec((err, doc) => {
             if (err) {
                 errorLog("getShopKeeper => GET FAILED ", err, req.method);

@@ -98,9 +98,20 @@ export const adduserService = async (req: Request = null, res: Response = null, 
 
 export const validateuserService = async (req: Request = null, res: Response = null, next: NextFunction) => {
 
-    const validData = await User.find().where({ phoneNumber: req.body.phone, OTP: req.body.otp });
+    const validData = await User.find().where({ phone: req.body.phone, OTP: req.body.otp });
     if (validateuserService) {
         res.send(validData);
+    }
+    else {
+        res.send("Something Went Wrong");
+    }
+};
+
+export const userInfoService = async (req: Request = null, res: Response = null, next: NextFunction) => {
+
+    const userInfo = await User.find().where({ phone: req.query.phone });
+    if (validateuserService) {
+        res.send(userInfo);
     }
     else {
         res.send("Something Went Wrong");
