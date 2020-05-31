@@ -1,9 +1,10 @@
 import Axios from "axios";
+import fs from "fs";
+import { IMAGE_URI, SERVER_IP, NOT_FOUND_IMAGE } from "../util/secrets";
 import { Types } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { ShopProductsList } from "../models/ShopProductListModel";
-import { SERVER_IP } from "../util/secrets";
 import { ShopKeeper } from "../models/shopKeeperModel";
 import { Promise } from "bluebird";
 
@@ -242,7 +243,7 @@ export const nearByShops = async (req: Request = null, res: Response = null) => 
     const longitude = req.query.long;
     const lattitude = req.query.lat;
     const distance = req.query.distance;
-    const getData = await ShopKeeper.find({
+    const doc = await ShopKeeper.find({
         loc: {
             $near: {
                 $geometry: {
@@ -253,5 +254,22 @@ export const nearByShops = async (req: Request = null, res: Response = null) => 
             }
         }
     });
-    res.status(200).jsonp({ message: getData });
+
+    let imageSource: string[] = []; // Pushing Image to it
+    for (const t in doc) {
+        if (doc[t]._id) {
+            infoLog("getShopKeeper => IMAGE FOUND", [req.body, req.query]);
+            if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
+                fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
+                    imageSource.push(`${SERVER_IP}static/${doc[t]._id + "/" + file}`);
+                });
+            }
+            else {
+                imageSource.push(NOT_FOUND_IMAGE);
+            }
+        }
+        doc[t].imageList = imageSource;
+        imageSource = [];
+    }
+    res.status(200).jsonp({ message: doc });
 };
