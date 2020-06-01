@@ -7,6 +7,7 @@ import { infoLog, errorLog } from "../util/loggerInfo";
 import { ShopProductsList } from "../models/ShopProductListModel";
 import { ShopKeeper } from "../models/shopKeeperModel";
 import { Promise } from "bluebird";
+import sendTeleegramNotification from "../util/telegram.bot";
 
 
 /**
@@ -84,6 +85,7 @@ export const updateShopProductsList = async (req: Request = null, res: Response 
         }
         else {
             infoLog("updateShopProductsList", [req.body, req.query, doc]);
+            sendTeleegramNotification('447233341', "Hello");
             return res.status(200).json({ message: "Updated Successfuly!!", item: doc });
         }
 

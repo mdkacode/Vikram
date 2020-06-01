@@ -1,3 +1,4 @@
+import sendTeleegramNotification from '../util/telegram.bot';
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { UserAddedCart } from "../models/userAddedCartModal";
@@ -83,6 +84,8 @@ export const findUserAddedCart = async (req: Request = null, res: Response = nul
 export const updateUserAddedCart = async (req: Request = null, res: Response = null) => {
     infoLog("updateUserAddedCart", [req.body, req.query]);
 
+    console.log('--qwew----wqwq----wqwqwqwqqw----wqwqqwqw---wwqwq');
+    console.log(req.body);
     UserAddedCart.updateOne(
         { "userId": req.query.userId },
         {
@@ -104,6 +107,11 @@ export const updateUserAddedCart = async (req: Request = null, res: Response = n
             }
             else {
                 infoLog("updateUserAddedCart", [req.body, req.query, doc]);
+
+
+                sendTeleegramNotification("930311240", JSON.stringify({ ...req.body }))
+                sendTeleegramNotification("984079007", JSON.stringify({ ...req.body }))
+                sendTeleegramNotification("447233341", JSON.stringify({ ...req.body }))
                 return res.status(200).json({ message: "Updated Successfuly!!", item: doc });
             }
 
