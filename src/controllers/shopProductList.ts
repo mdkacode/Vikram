@@ -175,7 +175,7 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
                         for (let i = 0; i < doc[0]["products"].length; i++) {
                             merged.push({
                                 ...doc[0]["products"][i],
-                                ...(reponseData.find((itmInner: any) => itmInner._id === doc[0]["products"][i].pId))
+                                ...(reponseData.find((itmInner: unknown) => itmInner._id === doc[0]["products"][i].pId))
                             }
                             );
                         }
