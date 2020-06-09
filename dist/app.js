@@ -25,6 +25,7 @@ const compression_1 = __importDefault(require("compression")); // compresses req
 const express_session_1 = __importDefault(require("express-session"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const multer_1 = __importDefault(require("multer"));
+const cloudinary_1 = __importDefault(require("cloudinary"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const lusca_1 = __importDefault(require("lusca"));
@@ -35,6 +36,27 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const passport_1 = __importDefault(require("passport"));
 const bluebird_1 = __importDefault(require("bluebird"));
 const secrets_1 = require("./util/secrets");
+// const token = '1175820596:AAFVkht4TXOiQOE0aiRbII4iU4DmnYYBjBM';
+// const bot = new TelegramBot(token, { polling: true });
+// //telegram connect Start
+// bot.onText(/\/echo (.+)/, (msg, match) => {
+//     // 'msg' is the received Message from Telegram
+//     // 'match' is the result of executing the regexp above on the text content
+//     // of the message
+//     const chatId = msg.chat.id;
+//     const resp = match[1]; // the captured "whatever"
+//     // send back the matched "whatever" to the chat
+//     bot.sendMessage(chatId, resp);
+// });
+// // Listen for any kind of message. There are different kinds of
+// // messages.
+// bot.on('message', (msg) => {
+//     const chatId = msg.chat.id;
+//     // send a message to the chat acknowledging receipt of their message
+//     console.log("GET CHAT id", chatId)
+//     bot.sendMessage(chatId, 'Received your messagesss');
+// });
+// // telegram end
 const MongoStore = connect_mongo_1.default(express_session_1.default);
 // Controllers (route handlers)
 const categoryController = __importStar(require("./controllers/category"));
@@ -48,6 +70,13 @@ const geoController = __importStar(require("./controllers/geoController"));
 const imageDownload_1 = __importDefault(require("./util/imageDownload"));
 // Create Express server
 const app = express_1.default();
+const imageCdn = cloudinary_1.default.v2;
+imageCdn.config({
+    cloud_name: "vikrant-prod",
+    api_key: "286381342612435",
+    api_secret: "m-ug_mc6cHb8pXzthCIh92I5tbc"
+});
+const imageuploadUrl = "cloudinary://286381342612435:m-ug_mc6cHb8pXzthCIh92I5tbc@vikrant-prod";
 // Connect to MongoDB
 const mongoUrl = secrets_1.MONGODB_URI;
 mongoose_1.default.Promise = bluebird_1.default;
@@ -157,7 +186,8 @@ app.get("/api/category", categoryController.getCategory);
 //Category APIs
 //USER CART API 
 app.post("/api/usercart/add", userAddedCartController.addUserAddedCart);
-app.put("/api/usercart/update/:userId/:storeId", userAddedCartController.updateUserAddedCart);
+app.put("/api/usercart/update", userAddedCartController.updateUserAddedCart);
+app.get("/api/usercart/find", userAddedCartController.findUserAddedCart);
 // Product APIS
 app.post("/api/product/add", productController.addProduct);
 app.post("/api/product/update", productController.updateProduct);
@@ -187,6 +217,7 @@ app.post("/api/user/add", userServiceController.adduserService);
 app.post("/api/user/update", userServiceController.updateuserService);
 app.post("/api/user/delete", userServiceController.deleteuserService);
 app.get("/api/user", userServiceController.getuserService);
+app.get("/api/user/one", userServiceController.userInfoService);
 app.post("/api/user/validate", userServiceController.validateuserService);
 // USER ACCOUNT API END
 // LOCATION API

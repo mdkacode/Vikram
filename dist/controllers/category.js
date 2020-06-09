@@ -110,7 +110,7 @@ exports.getCategory = (req = null, res = null) => __awaiter(void 0, void 0, void
                             console.log(doc[t]._id, "GETIMAGE");
                             console.log(`image FOUND ${secrets_1.IMAGE_URI + doc[t]._id}`);
                             fs_1.default.readdirSync(secrets_1.IMAGE_URI + doc[t]._id).forEach(file => {
-                                imageSource.push(`https://pluckershop.com/api/static/${doc[t]._id + "/" + file}`);
+                                imageSource.push(`${secrets_1.SERVER_IP}static/${doc[t]._id + "/" + file}`);
                             });
                         }
                         else {
