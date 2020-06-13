@@ -16,6 +16,10 @@ export const SESSION_SECRET = process.env["SESSION_SECRET"];
 export const MONGODB_URI = prod ? process.env["MONGODB_URI"] : process.env["MONGODB_URI_LOCAL"];
 export const IMAGE_URI = prod ? process.env["UPLOAD_PATH"] : process.env["UPLOAD_PATH_LOCAL"];
 export const SERVER_IP = prod ? process.env["SERVER_IP"] : process.env["SERVER_IP_LOCAL"];
+export const MESSAGE_SID = prod ? process.env["MESSAGE_SID"] : process.env["MESSAGE_SID"];
+export const MESSAGE_AUTH = prod ? process.env["MESSAGE_AUTH_TOKEN"] : process.env["MESSAGE_AUTH_TOKEN"];
+export const MESSAGE_NUMBER = prod ? process.env["MESSAGE_NUMBER"] : process.env["MESSAGE_NUMBER"];
+
 export const NOT_FOUND_IMAGE = process.env["NOT_FOUND_IMAGE"];
 if (!SESSION_SECRET) {
     logger.error("No client secret. Set SESSION_SECRET environment variable.");

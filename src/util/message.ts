@@ -1,8 +1,9 @@
 
 
 import client from "twilio";
-const accountSid = "AC414d4c5d23315ead1e3461c979a08603";
-const authToken = "cfa3f40b276469b42cb49ae20ecaa57e";
+import { MESSAGE_AUTH,MESSAGE_SID,MESSAGE_NUMBER } from "../util/secrets";
+const accountSid = MESSAGE_SID;
+const authToken = MESSAGE_AUTH;
 const messageClient = client(accountSid, authToken);
 interface SendMessageProps {
     code: number;
@@ -13,7 +14,7 @@ const sendMessage = (props: SendMessageProps) => {
     const { code, userNumber } = props;
     messageClient.messages.create({
         body: `<#> ${code} is your Apna App code`,
-        from: "+17867867719",
+        from: MESSAGE_NUMBER,
         to: `${userNumber.includes("+91") ? userNumber : `+91${userNumber}`}`
     })
         .then(message => console.log("LETTT", message.sid)).catch(e => {
@@ -24,7 +25,7 @@ const sendMessage = (props: SendMessageProps) => {
 const sendWhatsAppMessage = (props: SendMessageProps) => {
     const { code, userNumber } = props;
     messageClient.messages.create({
-        from: "whatsapp:+17632963461",
+        from: `whatsapp:${MESSAGE_NUMBER}`,
         body: `${code} is your Apna App code`,
         to: `whatsapp:${userNumber.includes("+91") ? userNumber : `+91${userNumber}`}`
     })
