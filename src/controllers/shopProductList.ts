@@ -164,10 +164,9 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
 
 
 
-                        console.log(tempIds, "GET PIDS ");
+                      if (tempIds) 
+                      {
                         const elementLength = doc[0]["products"].length;
-                        console.log("GETPROUCSLENGTH", doc[0]["products"].length);
-                        console.log(doc[0]["products"], "asdfghjklkjhgfdsa");
                         const data = await Axios("http://localhost:3001/api/product/many?ids=" + tempIds);
 
                         const merged = [];
@@ -176,11 +175,16 @@ export const getNamedShopProductsList = async (req: Request = null, res: Respons
                             merged.push({
                                 ...doc[0]["products"][i],
                                 ...(reponseData.find((itmInner: unknown) => itmInner._id === doc[0]["products"][i].pId))
-                            }
-                            );
+                            });
                         }
                         // let arr3 = arr1.map((item, i) => Object.assign({}, item, arr2[i]));
                         res.status(200).jsonp({ products: merged, length: elementLength });
+
+                      }
+                      else {
+                        res.status(200).jsonp({ products: [], length: 0 });
+                      }
+                        
                     }
 
                     else res.status(500).jsonp({ products: [], message: "No Product Found" });
@@ -200,7 +204,7 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
 
     const shopIds = req.query.shopIds;
 
-    ShopProductsList.find({ _id: shopIds.split(",") }).then(async (doc) => {
+  shopIds ?  ShopProductsList.find({ _id: shopIds.split(",") }).then(async (doc) => {
         const aggregatedProdcutList = [];
         const productIds: string[] = [];
         const pidshopList: { pId: string; cIds: string; shop_id: any; price: object }[] = [];
@@ -217,13 +221,16 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
 
 
         console.log("qwerty" + productIds.join());
+        let productsList = productIds.join();
         // console.log(e.products)
-        const dataa = await Axios("http://localhost:3001/api/product/many?ids=" + productIds.join());
-
+        if (productsList)
+        {
+        console.log("GETTING ERROR INSIDE IF")
+        const dataa = await Axios("http://localhost:3001/api/product/many?ids=" + productsList);
         const masterarry: unknown[] = [];
 
 
-        const areaProducts = await Promise.map(dataa.data.data, e => {
+        const areaProducts = await Promise.map(dataa.data.data, ( e:any ) => {
             pidshopList.find((item) => {
                 if (item.pId === e._id) {
 
@@ -233,10 +240,18 @@ export const allProducts = async (req: Request = null, res: Response = null) => 
                 }
             });
             return masterarry;
-        });
-        // let dataaaa = await Promise.all(dataa.data.data.map(e =>));
+        }); 
         res.status(200).json({ products: masterarry, length: areaProducts.length });
-    });
+        }
+        else {
+            console.log("GETTING ERROR INSIDE IF")
+            res.status(200).json({ products: [], length: 0 });
+        }
+       
+
+        // let dataaaa = await Promise.all(dataa.data.data.map(e =>));
+       
+    }) :  res.status(200).json({ products: [], length: 0 }); // Terney Check for the ShopIds
 
 };
 
