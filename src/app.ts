@@ -19,34 +19,6 @@ import { MONGODB_URI, SESSION_SECRET } from "./util/secrets";
 
 
 
-// const token = '1175820596:AAFVkht4TXOiQOE0aiRbII4iU4DmnYYBjBM';
-
-// const bot = new TelegramBot(token, { polling: true });
-
-// //telegram connect Start
-// bot.onText(/\/echo (.+)/, (msg, match) => {
-//     // 'msg' is the received Message from Telegram
-//     // 'match' is the result of executing the regexp above on the text content
-//     // of the message
-
-//     const chatId = msg.chat.id;
-//     const resp = match[1]; // the captured "whatever"
-
-//     // send back the matched "whatever" to the chat
-//     bot.sendMessage(chatId, resp);
-// });
-
-// // Listen for any kind of message. There are different kinds of
-// // messages.
-// bot.on('message', (msg) => {
-//     const chatId = msg.chat.id;
-
-//     // send a message to the chat acknowledging receipt of their message
-//     console.log("GET CHAT id", chatId)
-//     bot.sendMessage(chatId, 'Received your messagesss');
-// });
-// // telegram end
-
 
 
 const MongoStore = mongo(session);
@@ -58,6 +30,7 @@ import * as shopKeeperController from "./controllers/shopKeeper";
 import * as userServiceController from "./controllers/userServiceController";
 import * as shopProductListController from "./controllers/shopProductList";
 import * as userAddedCartController from "./controllers/userAddedCartController";
+import * as orderByFilters from "./controllers/placedOrder";
 
 import * as geoController from "./controllers/geoController";
 // API keys and Passport configuration
@@ -242,7 +215,12 @@ app.post("/api/user/delete", userServiceController.deleteuserService);
 app.get("/api/user", userServiceController.getuserService);
 app.get("/api/user/one", userServiceController.userInfoService);
 app.post("/api/user/validate", userServiceController.validateuserService);
+app.get("/api/orders/phone" ,orderByFilters.orderByFilters);
 // USER ACCOUNT API END
+
+// placed order API START
+
+// placed order API END
 
 // LOCATION API
 app.get("/api/area", geoController.areaSuggestion);
