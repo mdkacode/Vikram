@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 
 export interface User extends Document {
+    imageList: string[];
 
     cId: string; // cart id => unique id
     emailId: string;
@@ -22,7 +23,7 @@ export interface User extends Document {
 }
 
 
-const UserSchema: Schema = new Schema({
+export const UserSchema: Schema = new Schema({
     cId: { type: String, required: false, unique: false },   // should be generated at the time of signup by system
     uuid: { type: String, required: false, unique: false },
     emailId: { type: String, required: false, unique: false },

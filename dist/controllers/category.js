@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCategory = exports.updateCategory = exports.deleteCategory = exports.addCategory = void 0;
 const secrets_1 = require("../util/secrets");
 const fs_1 = __importDefault(require("fs"));
 const loggerInfo_1 = require("../util/loggerInfo");

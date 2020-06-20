@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NOT_FOUND_IMAGE = exports.MESSAGE_NUMBER = exports.MESSAGE_AUTH = exports.MESSAGE_SID = exports.SERVER_IP = exports.IMAGE_URI = exports.MONGODB_URI = exports.SESSION_SECRET = exports.ENVIRONMENT = void 0;
 const logger_1 = __importDefault(require("./logger"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const fs_1 = __importDefault(require("fs"));
@@ -20,6 +21,9 @@ exports.SESSION_SECRET = process.env["SESSION_SECRET"];
 exports.MONGODB_URI = prod ? process.env["MONGODB_URI"] : process.env["MONGODB_URI_LOCAL"];
 exports.IMAGE_URI = prod ? process.env["UPLOAD_PATH"] : process.env["UPLOAD_PATH_LOCAL"];
 exports.SERVER_IP = prod ? process.env["SERVER_IP"] : process.env["SERVER_IP_LOCAL"];
+exports.MESSAGE_SID = prod ? process.env["MESSAGE_SID"] : process.env["MESSAGE_SID"];
+exports.MESSAGE_AUTH = prod ? process.env["MESSAGE_AUTH_TOKEN"] : process.env["MESSAGE_AUTH_TOKEN"];
+exports.MESSAGE_NUMBER = prod ? process.env["MESSAGE_NUMBER"] : process.env["MESSAGE_NUMBER"];
 exports.NOT_FOUND_IMAGE = process.env["NOT_FOUND_IMAGE"];
 if (!exports.SESSION_SECRET) {
     logger_1.default.error("No client secret. Set SESSION_SECRET environment variable.");

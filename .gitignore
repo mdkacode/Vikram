@@ -17,6 +17,7 @@ imagesPublic
 # Build
 public/css/main.css
 
+*.js
 # Coverage reports
 coverage
 
