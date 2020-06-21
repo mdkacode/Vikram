@@ -15,33 +15,49 @@ import { infoLog, errorLog } from "../util/loggerInfo";
  * @param res
  */
 export const orderByFilters = async (req: Request = null, res: Response = null) =>{
-    let filterUserCart = await UserAddedCart.findOne({})
-    let cartElements = filterUserCart['carts'];
-    let finalCartInfo:any = [];
-    let finalCartObject:any = [];
-    await Promise.map(cartElements['prodcuts'],async (item: any, index: number) => {
-        const getOrderDate = new Date(item.orderDate);
-        let todayDate = new Date();
-        if(getOrderDate.getDate() == todayDate.getDate()){
-            finalCartInfo.push(item);
+    let filterUserCart = await UserAddedCart.find({},async (err,result)=>{
+        if(err){
+            res.status(500).jsonp( {error:"Something Went Wrong"});
         }
+        else {
+            let finalCartInfo:any = [];
+            await Promise.map(result, async (cartItem:any,index:number)=>{
 
-    }).then(function () {
+                await Promise.map(cartItem['carts']['prodcuts'],async (item: any, index: number) => {
+                    const getOrderDate = new Date(item.orderDate);
+                    let todayDate = new Date();
+                    if(getOrderDate.getDate() == todayDate.getDate()){
+                        console.log('list of items',item);
+                        finalCartInfo.push(item);
+                    }
 
+                }).catch(e=>{
+                    console.log(e)
+                })
+                await Promise.map(finalCartInfo,async  (item:any,index:number)=>{
+                    let userCheck = true;
+                    userCheck &&  await Promise.map(item.prodcucts,async (userInfo:any,index:number)=>{
+                        let userDetails = await User.findOne({phone:userInfo.userId});
+                        console.log('GET USER INFO',userDetails);
+                        item['userInfo'] = userDetails;
+                        userCheck = false;
+                    })
+
+                })
+            })
+
+
+
+
+
+
+
+            res.status(200).jsonp( finalCartInfo);
+
+        }
     })
-    await Promise.map(finalCartInfo,async  (item:any,index:number)=>{
-        let userCheck = true;
-        userCheck &&  await Promise.map(item.prodcucts,async (userInfo:any,index:number)=>{
-           let userDetails = await User.findOne({phone:userInfo.userId});
-           console.log('GET USER INFO',userDetails);
-            item['userInfo'] = userDetails;
-           userCheck = false;
-        })
-
-    })
 
 
-    res.status(200).jsonp( finalCartInfo);
     // first filter by user id
 
 }
