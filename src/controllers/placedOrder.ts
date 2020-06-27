@@ -26,10 +26,10 @@ export const orderByFilters = async (req: Request = null, res: Response = null) 
                 await Promise.map(cartItem['carts']['prodcuts'],async (item: any, index: number) => {
                     const getOrderDate = new Date(item.orderDate);
                     let todayDate = new Date();
-                    if(getOrderDate.getDate() == todayDate.getDate()){
+                    // if(getOrderDate.getDate() == todayDate.getDate()){
                         console.log('list of items',item);
                         finalCartInfo.push(item);
-                    }
+                    // }
 
                 }).catch(e=>{
                     console.log(e)
