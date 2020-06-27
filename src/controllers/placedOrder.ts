@@ -15,6 +15,7 @@ import { infoLog, errorLog } from "../util/loggerInfo";
  * @param res
  */
 export const orderByFilters = async (req: Request = null, res: Response = null) =>{
+    console.log("GETTING HERER SIME");
     let filterUserCart = await UserAddedCart.find({},async (err,result)=>{
         if(err){
             res.status(500).jsonp( {error:"Something Went Wrong"});
@@ -26,10 +27,10 @@ export const orderByFilters = async (req: Request = null, res: Response = null) 
                 await Promise.map(cartItem['carts']['prodcuts'],async (item: any, index: number) => {
                     const getOrderDate = new Date(item.orderDate);
                     let todayDate = new Date();
-                    // if(getOrderDate.getDate() == todayDate.getDate()){
-                        console.log('list of items',item);
+                    if(getOrderDate.getDate() == todayDate.getDate()){
+
                         finalCartInfo.push(item);
-                    // }
+                    }
 
                 }).catch(e=>{
                     console.log(e)
@@ -38,7 +39,6 @@ export const orderByFilters = async (req: Request = null, res: Response = null) 
                     let userCheck = true;
                     userCheck &&  await Promise.map(item.prodcucts,async (userInfo:any,index:number)=>{
                         let userDetails = await User.findOne({phone:userInfo.userId});
-                        console.log('GET USER INFO',userDetails);
                         item['userInfo'] = userDetails;
                         userCheck = false;
                     })
