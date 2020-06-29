@@ -89,12 +89,12 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
     infoLog("getProduct", [req.body, req.query]);
     const pageOptions = {
         page: parseInt(req.body.page, 10) || 0,
-        limit: parseInt(req.body.limit, 10) || 10
+        limit: parseInt(req.body.limit, 10) || 20
     };
 
     MasterProductList.find()
-        // .skip(pageOptions.page * pageOptions.limit)
-        // .limit(pageOptions.limit)
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
         .exec((err, doc) => {
             if (err) {
                 errorLog("getProduct => GET FAILED ", err, req.method);
