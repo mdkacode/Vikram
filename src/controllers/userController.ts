@@ -1,9 +1,7 @@
-import { IMAGE_URI, SERVER_IP, NOT_FOUND_IMAGE } from "../util/secrets";
-import fs from "fs";
-import { Types } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
 import { MasterProductList } from "../models/productModel";
+import {User} from "../models/userModel";
 /**
  * @description | Add Product with Image, Name & slug
  * @param req
