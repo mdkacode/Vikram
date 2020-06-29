@@ -123,6 +123,44 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
         });
 };
 
+export const searchFindProduct = async (req: Request = null, res: Response = null) => {
+    infoLog("searchFindProduct", [req.body, req.query]);
+    const pageOptions = {
+        page: parseInt(<string>req.query.page, 10) || 0,
+        limit: parseInt(<string>req.query.limit, 10) || 50
+    };
+
+    await MasterProductList.find({name:{$regex: `${req.query.name}`,$options: 'i'}})
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
+        .exec((err, doc) => {
+            if (err) {
+                errorLog("searchFindProduct => GET FAILED ", err, req.method);
+                return res.status(500).jsonp({"messge": "Something Went Wrong !!", error: err});
+            } else {
+                {
+                    let imageSource: string[] = []; // Pushing Image to it
+                    for (const t in doc) {
+                        if (doc[t]._id) {
+                            infoLog("searchFindProduct => IMAGE FOUND", [req.body, req.query]);
+                            if (fs.existsSync(IMAGE_URI + doc[t]._id)) {
+                                console.log(`image FOUND ${IMAGE_URI + doc[t]._id}`);
+                                fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
+                                    imageSource.push(`${SERVER_IP}static/${doc[t]._id + "/" + file}`);
+                                });
+                            } else {
+                                imageSource.push(NOT_FOUND_IMAGE);
+                            }
+                        }
+                        doc[t].imageList = imageSource;
+                        imageSource = [];
+                    }
+                }
+                res.status(200).jsonp({message: doc, size: doc.length});
+            }
+        });
+};
+
 export const getSingleProduct = async (req: Request = null, res: Response = null) => {
     infoLog("getSingleProduct", [req.body, req.query]);
 

@@ -184,6 +184,8 @@ app.post("/api/product/add", productController.addProduct);
 app.post("/api/product/update", productController.updateProduct);
 app.post("/api/product/delete", productController.deleteProduct);
 app.get("/api/product", productController.getProduct);
+app.get("/api/searchProduct", productController.searchFindProduct);
+
 app.get("/api/product/one", productController.getSingleProduct);
 app.get("/api/product/many", productController.getManyProduct);
 // Product APIS
