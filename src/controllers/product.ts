@@ -88,19 +88,18 @@ export const updateProduct = async (req: Request = null, res: Response = null) =
 export const getProduct = async (req: Request = null, res: Response = null) => {
     infoLog("getProduct", [req.body, req.query]);
     const pageOptions = {
-        page: parseInt(req.body.page, 10) || 0,
-        limit: parseInt(req.body.limit, 10) || 20
+        page: parseInt(<string>req.query.page, 10) || 0,
+        limit: parseInt(<string>req.query.limit, 10) || 20
     };
 
-    MasterProductList.find()
+    await MasterProductList.find()
         .skip(pageOptions.page * pageOptions.limit)
         .limit(pageOptions.limit)
         .exec((err, doc) => {
             if (err) {
                 errorLog("getProduct => GET FAILED ", err, req.method);
-                return res.status(500).jsonp({ "messge": "Something Went Wrong !!", error: err });
-            }
-            else {
+                return res.status(500).jsonp({"messge": "Something Went Wrong !!", error: err});
+            } else {
                 {
                     let imageSource: string[] = []; // Pushing Image to it
                     for (const t in doc) {
@@ -111,8 +110,7 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
                                 fs.readdirSync(IMAGE_URI + doc[t]._id).forEach(file => {
                                     imageSource.push(`${SERVER_IP}static/${doc[t]._id + "/" + file}`);
                                 });
-                            }
-                            else {
+                            } else {
                                 imageSource.push(NOT_FOUND_IMAGE);
                             }
                         }
@@ -120,7 +118,7 @@ export const getProduct = async (req: Request = null, res: Response = null) => {
                         imageSource = [];
                     }
                 }
-                res.status(200).jsonp({ message: doc, size: doc.length });
+                res.status(200).jsonp({message: doc, size: doc.length});
             }
         });
 };
