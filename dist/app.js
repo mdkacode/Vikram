@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11,13 +30,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const loggerInfo_1 = require("./util/loggerInfo");
 const express_1 = __importDefault(require("express"));
@@ -25,6 +37,7 @@ const compression_1 = __importDefault(require("compression")); // compresses req
 const express_session_1 = __importDefault(require("express-session"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const multer_1 = __importDefault(require("multer"));
+const cloudinary_1 = __importDefault(require("cloudinary"));
 const cors_1 = __importDefault(require("cors"));
 const fs_1 = __importDefault(require("fs"));
 const lusca_1 = __importDefault(require("lusca"));
@@ -35,6 +48,27 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const passport_1 = __importDefault(require("passport"));
 const bluebird_1 = __importDefault(require("bluebird"));
 const secrets_1 = require("./util/secrets");
+// const token = '1175820596:AAFVkht4TXOiQOE0aiRbII4iU4DmnYYBjBM';
+// const bot = new TelegramBot(token, { polling: true });
+// //telegram connect Start
+// bot.onText(/\/echo (.+)/, (msg, match) => {
+//     // 'msg' is the received Message from Telegram
+//     // 'match' is the result of executing the regexp above on the text content
+//     // of the message
+//     const chatId = msg.chat.id;
+//     const resp = match[1]; // the captured "whatever"
+//     // send back the matched "whatever" to the chat
+//     bot.sendMessage(chatId, resp);
+// });
+// // Listen for any kind of message. There are different kinds of
+// // messages.
+// bot.on('message', (msg) => {
+//     const chatId = msg.chat.id;
+//     // send a message to the chat acknowledging receipt of their message
+//     console.log("GET CHAT id", chatId)
+//     bot.sendMessage(chatId, 'Received your messagesss');
+// });
+// // telegram end
 const MongoStore = connect_mongo_1.default(express_session_1.default);
 // Controllers (route handlers)
 const categoryController = __importStar(require("./controllers/category"));
@@ -48,16 +82,32 @@ const geoController = __importStar(require("./controllers/geoController"));
 const imageDownload_1 = __importDefault(require("./util/imageDownload"));
 // Create Express server
 const app = express_1.default();
+const imageCdn = cloudinary_1.default.v2;
+imageCdn.config({
+    cloud_name: "vikrant-prod",
+    api_key: "286381342612435",
+    api_secret: "m-ug_mc6cHb8pXzthCIh92I5tbc",
+});
+const imageuploadUrl = "cloudinary://286381342612435:m-ug_mc6cHb8pXzthCIh92I5tbc@vikrant-prod";
 // Connect to MongoDB
 const mongoUrl = secrets_1.MONGODB_URI;
 mongoose_1.default.Promise = bluebird_1.default;
-mongoose_1.default.connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }).then(() => { }).catch(err => {
+mongoose_1.default
+    .connect(mongoUrl, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+})
+    .then(() => {
+    /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
+})
+    .catch((err) => {
     console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
     // process.exit();
 });
 const UPLOAD_PATH = "imagesPublic/";
 // Express configuration
-app.set("port", process.env.PORT || 3001);
+app.set("port", process.env.PORT || 3000);
 app.use(express_1.default.static(__dirname + UPLOAD_PATH));
 app.use("/api/static", express_1.default.static(UPLOAD_PATH));
 app.use(compression_1.default());
@@ -70,8 +120,8 @@ app.use(express_session_1.default({
     secret: secrets_1.SESSION_SECRET,
     store: new MongoStore({
         url: mongoUrl,
-        autoReconnect: true
-    })
+        autoReconnect: true,
+    }),
 }));
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
@@ -86,9 +136,10 @@ const storage = multer_1.default.diskStorage({
         const fileName = file.originalname;
         const lastExtenstion = fileName.substring(fileName.lastIndexOf("."));
         const folderName = req.query.name;
-        !fs_1.default.existsSync(UPLOAD_PATH + folderName.toString()) && fs_1.default.mkdirSync(UPLOAD_PATH + folderName.toString());
+        !fs_1.default.existsSync(UPLOAD_PATH + folderName.toString()) &&
+            fs_1.default.mkdirSync(UPLOAD_PATH + folderName.toString());
         cb(null, `${folderName.toString()}/${new Date().getTime()}${lastExtenstion}`);
-    }
+    },
 });
 const upload = multer_1.default({ limits: { fileSize: 8000000 }, storage: storage });
 app.use((req, res, next) => {
@@ -106,8 +157,7 @@ app.use((req, res, next) => {
         !req.path.match(/\./)) {
         req.session.returnTo = req.path;
     }
-    else if (req.user &&
-        req.path == "/account") {
+    else if (req.user && req.path == "/account") {
         req.session.returnTo = req.path;
     }
     next();
@@ -122,11 +172,16 @@ app.post("/api/productImage", (req, res) => __awaiter(void 0, void 0, void 0, fu
         const imageUrl = req.query.image.toString();
         const imgUrls = imageUrl.split(",");
         console.log(imgUrls);
-        !fs_1.default.existsSync("imagesPublic/" + req.query.name.toString()) && fs_1.default.mkdirSync("imagesPublic/" + req.query.name.toString());
+        !fs_1.default.existsSync("imagesPublic/" + req.query.name.toString()) &&
+            fs_1.default.mkdirSync("imagesPublic/" + req.query.name.toString());
         for (const t in imgUrls) {
             const lastExtenstion = imgUrls[t].substring(imgUrls[t].lastIndexOf("."));
             console.log("GET IMAGE TYPE", lastExtenstion);
-            yield imageDownload_1.default({ name: `${req.query.name}/${new Date().getTime()}${lastExtenstion}`, link: imgUrls[t], folder: "imagesPublic" });
+            yield imageDownload_1.default({
+                name: `${req.query.name}/${new Date().getTime()}${lastExtenstion}`,
+                link: imgUrls[t],
+                folder: "imagesPublic",
+            });
         }
         res.status(200).jsonp({ message: "uploaded Succesfully" });
     }
@@ -155,9 +210,10 @@ app.post("/api/category/update", categoryController.updateCategory);
 app.post("/api/category/delete", categoryController.deleteCategory);
 app.get("/api/category", categoryController.getCategory);
 //Category APIs
-//USER CART API 
+//USER CART API
 app.post("/api/usercart/add", userAddedCartController.addUserAddedCart);
-app.put("/api/usercart/update/:userId/:storeId", userAddedCartController.updateUserAddedCart);
+app.put("/api/usercart/update", userAddedCartController.updateUserAddedCart);
+app.get("/api/usercart/find", userAddedCartController.findUserAddedCart);
 // Product APIS
 app.post("/api/product/add", productController.addProduct);
 app.post("/api/product/update", productController.updateProduct);
@@ -187,6 +243,7 @@ app.post("/api/user/add", userServiceController.adduserService);
 app.post("/api/user/update", userServiceController.updateuserService);
 app.post("/api/user/delete", userServiceController.deleteuserService);
 app.get("/api/user", userServiceController.getuserService);
+app.get("/api/user/one", userServiceController.userInfoService);
 app.post("/api/user/validate", userServiceController.validateuserService);
 // USER ACCOUNT API END
 // LOCATION API

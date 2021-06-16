@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCategory = exports.updateCategory = exports.deleteCategory = exports.addCategory = void 0;
 const secrets_1 = require("../util/secrets");
 const fs_1 = __importDefault(require("fs"));
 const loggerInfo_1 = require("../util/loggerInfo");
@@ -110,7 +111,7 @@ exports.getCategory = (req = null, res = null) => __awaiter(void 0, void 0, void
                             console.log(doc[t]._id, "GETIMAGE");
                             console.log(`image FOUND ${secrets_1.IMAGE_URI + doc[t]._id}`);
                             fs_1.default.readdirSync(secrets_1.IMAGE_URI + doc[t]._id).forEach(file => {
-                                imageSource.push(`https://pluckershop.com/api/static/${doc[t]._id + "/" + file}`);
+                                imageSource.push(`${secrets_1.SERVER_IP}static/${doc[t]._id + "/" + file}`);
                             });
                         }
                         else {
