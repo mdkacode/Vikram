@@ -100,8 +100,11 @@ app.use(express.static(__dirname + UPLOAD_PATH));
 app.use("/api/static", express.static(UPLOAD_PATH));
 
 app.use(compression());
-
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
