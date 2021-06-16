@@ -30,7 +30,6 @@
 		"@types/cors": "^2.8.6",
 		"@types/multer": "^1.4.3",
 		"@types/node-telegram-bot-api": "^0.40.3",
-		"@types/twilio": "^2.11.0",
 		"async": "^3.1.0",
 		"axios": "^0.19.2",
 		"bcrypt-nodejs": "^0.0.3",
@@ -60,7 +59,6 @@
 		"passport-local": "^1.0.0",
 		"pug": "^2.0.4",
 		"request": "^2.88.2",
-		"twilio": "^3.43.0",
 		"uuid": "^8.0.0",
 		"winston": "^3.2.1"
 	},
