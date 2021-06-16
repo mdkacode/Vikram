@@ -28,7 +28,9 @@ exports.addCategory = (req = null, res = null) => __awaiter(void 0, void 0, void
     Category.save((err, doc) => {
         if (err) {
             loggerInfo_1.errorLog("addCategory", err, req.method);
-            res.status(500).jsonp({ message: "Field Validation Failed !!", error: err });
+            res
+                .status(500)
+                .jsonp({ message: "Field Validation Failed !!", error: err });
         }
         else {
             loggerInfo_1.infoLog("addCategory => RESPONSE SUCCESS", [req.body, req.query, doc]);
@@ -50,7 +52,9 @@ exports.deleteCategory = (req = null, res = null, next) => __awaiter(void 0, voi
         const doc = yield Category_1.MasterCategory.deleteOne(Object.assign({}, req.body));
         if (doc.deletedCount > 0) {
             loggerInfo_1.infoLog("deleteCategory => SUCCESS", [req.body, req.query, doc]);
-            res.status(200).jsonp({ message: "Item Deleted Successfully", data: doc });
+            res
+                .status(200)
+                .jsonp({ message: "Item Deleted Successfully", data: doc });
             next();
         }
         else {
@@ -70,7 +74,12 @@ exports.deleteCategory = (req = null, res = null, next) => __awaiter(void 0, voi
  */
 exports.updateCategory = (req = null, res = null) => __awaiter(void 0, void 0, void 0, function* () {
     loggerInfo_1.infoLog("updateCategory", [req.body, req.query]);
-    Category_1.MasterCategory.findOneAndUpdate(Object.assign({}, req.query), Object.assign({}, req.body), (err) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    Category_1.MasterCategory.findOneAndUpdate(Object.assign({}, req.query), Object.assign({}, req.body), 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    (err) => {
         if (err) {
             loggerInfo_1.errorLog("deleteCategory => UPDATE FAILED ", err, req.method);
             return res.status(500).json({ message: "Something went Wrong" });
@@ -78,11 +87,15 @@ exports.updateCategory = (req = null, res = null) => __awaiter(void 0, void 0, v
     }).then((doc) => {
         if (!doc) {
             loggerInfo_1.infoLog("updateCategory", [req.body, req.query, doc]);
-            return res.status(204).json({ message: "Requested Element Not Found !!", item: doc });
+            return res
+                .status(204)
+                .json({ message: "Requested Element Not Found !!", item: doc });
         }
         else {
             loggerInfo_1.infoLog("updateCategory", [req.body, req.query, doc]);
-            return res.status(200).json({ message: "Updated Successfuly!!", item: doc });
+            return res
+                .status(200)
+                .json({ message: "Updated Successfuly!!", item: doc });
         }
     });
 });
@@ -90,7 +103,7 @@ exports.getCategory = (req = null, res = null) => __awaiter(void 0, void 0, void
     loggerInfo_1.infoLog("getCategory", [req.body, req.query]);
     const pageOptions = {
         page: parseInt(req.body.page, 10) || 0,
-        limit: parseInt(req.body.limit, 10) || 10
+        limit: parseInt(req.body.limit, 10) || 10,
     };
     Category_1.MasterCategory.find()
         .skip(pageOptions.page * pageOptions.limit)
@@ -98,7 +111,9 @@ exports.getCategory = (req = null, res = null) => __awaiter(void 0, void 0, void
         .exec((err, doc) => {
         if (err) {
             loggerInfo_1.errorLog("getCategory => GET FAILED ", err, req.method);
-            return res.status(500).jsonp({ "messge": "Something Went Wrong !!", error: err });
+            return res
+                .status(500)
+                .jsonp({ messge: "Something Went Wrong !!", error: err });
         }
         else {
             {
@@ -110,7 +125,7 @@ exports.getCategory = (req = null, res = null) => __awaiter(void 0, void 0, void
                         if (fs_1.default.existsSync(secrets_1.IMAGE_URI + doc[t]._id)) {
                             console.log(doc[t]._id, "GETIMAGE");
                             console.log(`image FOUND ${secrets_1.IMAGE_URI + doc[t]._id}`);
-                            fs_1.default.readdirSync(secrets_1.IMAGE_URI + doc[t]._id).forEach(file => {
+                            fs_1.default.readdirSync(secrets_1.IMAGE_URI + doc[t]._id).forEach((file) => {
                                 imageSource.push(`${secrets_1.SERVER_IP}static/${doc[t]._id + "/" + file}`);
                             });
                         }

@@ -63,8 +63,11 @@ import downloadImage from "./util/imageDownload";
 const app = express();
 const imageCdn = cloudinary.v2;
 imageCdn.config({
+  // eslint-disable-next-line @typescript-eslint/camelcase
   cloud_name: "vikrant-prod",
+  // eslint-disable-next-line @typescript-eslint/camelcase
   api_key: "286381342612435",
+  // eslint-disable-next-line @typescript-eslint/camelcase
   api_secret: "m-ug_mc6cHb8pXzthCIh92I5tbc",
 });
 
@@ -151,8 +154,12 @@ app.use((req, res, next) => {
     !req.path.match(/^\/auth/) &&
     !req.path.match(/\./)
   ) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
     req.session.returnTo = req.path;
   } else if (req.user && req.path == "/account") {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
     req.session.returnTo = req.path;
   }
   next();

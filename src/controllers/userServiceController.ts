@@ -2,8 +2,8 @@ import { IMAGE_URI, SERVER_IP, NOT_FOUND_IMAGE } from "../util/secrets";
 import fs from "fs";
 import { Request, Response, NextFunction } from "express";
 import { infoLog, errorLog } from "../util/loggerInfo";
-import { User, UserSchema } from "../models/userModel";
-import { UserAddedCart, IuserAddedCart } from "../models/userAddedCartModal";
+import { User } from "../models/userModel";
+import { UserAddedCart } from "../models/userAddedCartModal";
 
 import messages from "../util/message";
 /**
@@ -25,6 +25,8 @@ export const adduserService = async (
     createdBy: "admin",
     updatedBy: "admin",
   });
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
   await User.findOne({ phone: req.body.phone }, (err, user) => {
     // for cheking existing user
 
@@ -73,6 +75,8 @@ export const adduserService = async (
           {
             otp: uniqueNumber,
           },
+          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // @ts-ignore
           function (err: any, affected: any, user: any) {
             if (err) {
               errorLog("NewUserCartError", [req.body.phone], "UpdatedPasword");
@@ -182,6 +186,8 @@ export const updateuserService = async (
   res: Response = null
 ) => {
   infoLog("updateuserService", [req.body, req.query]);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
   User.findOneAndUpdate({ ...req.query }, { ...req.body }, (err: object) => {
     if (err) {
       errorLog("deleteuserService => UPDATE FAILED ", err, req.method);
@@ -239,6 +245,8 @@ export const getuserService = async (
                 imageSource.push(NOT_FOUND_IMAGE);
               }
             }
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             doc[t].imageList = imageSource;
             imageSource = [];
           }
