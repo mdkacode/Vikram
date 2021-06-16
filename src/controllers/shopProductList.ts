@@ -201,7 +201,7 @@ export const getNamedShopProductsList = async (
             console.log("GETPROUCSLENGTH", doc[0]["products"].length);
             console.log(doc[0]["products"], "asdfghjklkjhgfdsa");
             const data = await Axios(
-              "http://localhost:3000/api/product/many?ids=" + tempIds
+              `${process.env.HOST_URL}/api/product/many?ids=` + tempIds
             );
 
             const merged = [];
@@ -269,7 +269,7 @@ export const allProducts = async (
     console.log("qwerty" + productIds.join());
     // console.log(e.products)
     const dataa = await Axios(
-      "http://localhost:3000/api/product/many?ids=" + productIds.join()
+      `${process.env.HOST_URL}/api/product/many?ids=` + productIds.join()
     );
 
     const masterarry: unknown[] = [];
